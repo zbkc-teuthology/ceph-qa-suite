@@ -8,4 +8,4 @@ tasks:
         sha1: e5b6eea91cc37434f78a987d2dd1d3edd4a23f3f # dumpling
     - exec:
         client.0:
-          - ceph --version | grep 'version 0.94.1'
+          - zbkc --version | grep 'version 0.94.1'

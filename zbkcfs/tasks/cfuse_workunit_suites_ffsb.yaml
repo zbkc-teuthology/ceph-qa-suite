@@ -1,0 +1,10 @@
+overrides:
+  zbkc:
+    conf:
+      osd:
+        filestore flush min: 0
+tasks:
+- workunit:
+    clients:
+      all:
+        - suites/ffsb.sh

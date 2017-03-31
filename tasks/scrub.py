@@ -7,7 +7,7 @@ import logging
 import random
 import time
 
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 
 log = logging.getLogger(__name__)
@@ -26,7 +26,7 @@ def task(ctx, config):
     example:
 
     tasks:
-    - ceph:
+    - zbkc:
     - scrub:
         frequency: 30
         deep: 0
@@ -41,10 +41,10 @@ def task(ctx, config):
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
 
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
 
     num_osds = teuthology.num_instances_of_type(ctx.cluster, 'osd')
@@ -69,10 +69,10 @@ class Scrubber:
         """
         Spawn scrubbing thread upon completion.
         """
-        self.ceph_manager = manager
-        self.ceph_manager.wait_for_clean()
+        self.zbkc_manager = manager
+        self.zbkc_manager.wait_for_clean()
 
-        osd_status = self.ceph_manager.get_osd_status()
+        osd_status = self.zbkc_manager.get_osd_status()
         self.osds = osd_status['up']
 
         self.config = config
@@ -112,6 +112,6 @@ class Scrubber:
                 cmd = 'scrub'
 
             log.info('%sbing %s' % (cmd, osd))
-            self.ceph_manager.raw_cluster_cmd('osd', cmd, osd)
+            self.zbkc_manager.raw_cluster_cmd('osd', cmd, osd)
 
             time.sleep(frequency)

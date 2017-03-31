@@ -6,4 +6,4 @@ tasks:
 - install:
     project: samba
     extra_packages: ['samba']
-- ceph:
+- zbkc:

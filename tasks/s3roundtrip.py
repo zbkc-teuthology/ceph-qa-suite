@@ -39,7 +39,7 @@ def download(ctx, config):
             args=[
                 'git', 'clone',
                 '-b', branch,
-                teuth_config.ceph_git_base_url + 's3-tests.git',
+                teuth_config.zbkc_git_base_url + 's3-tests.git',
                 '{tdir}/s3-tests'.format(tdir=testdir),
                 ],
             )
@@ -93,7 +93,7 @@ def create_users(ctx, config):
             ctx.cluster.only(client).run(
                 args=[
                     'adjust-ulimits',
-                    'ceph-coverage',
+                    'zbkc-coverage',
                     '{tdir}/archive/coverage'.format(tdir=testdir),
                     'radosgw-admin',
                     '-n', client,
@@ -114,7 +114,7 @@ def create_users(ctx, config):
                 ctx.cluster.only(client).run(
                     args=[
                         'adjust-ulimits',
-                        'ceph-coverage',
+                        'zbkc-coverage',
                         '{tdir}/archive/coverage'.format(tdir=testdir),
                         'radosgw-admin',
                         '-n', client,
@@ -208,21 +208,21 @@ def task(ctx, config):
     To run all tests on all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw:
         - s3roundtrip:
 
     To restrict testing to particular clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.0]
         - s3roundtrip: [client.0]
 
     To run against a server on client.1::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.1]
         - s3roundtrip:
             client.0:
@@ -231,7 +231,7 @@ def task(ctx, config):
     To pass extra test arguments
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.0]
         - s3roundtrip:
             client.0:
@@ -250,7 +250,7 @@ def task(ctx, config):
     To override s3 configuration
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.0]
         - s3roundtrip:
             client.0:

@@ -12,7 +12,7 @@ openstack:
       size: 10 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
     log-whitelist:
     - no reply from
 - full_sequential:

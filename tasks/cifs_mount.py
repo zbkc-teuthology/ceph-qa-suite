@@ -22,7 +22,7 @@ def task(ctx, config):
     Example that starts smbd and mounts cifs on all nodes::
 
         tasks:
-        - ceph:
+        - zbkc:
         - samba:
         - cifs-mount:
         - interactive:
@@ -30,23 +30,23 @@ def task(ctx, config):
     Example that splits smbd and cifs:
 
         tasks:
-        - ceph:
+        - zbkc:
         - samba: [samba.0]
         - cifs-mount: [client.0]
-        - ceph-fuse: [client.1]
+        - zbkc-fuse: [client.1]
         - interactive:
 
     Example that specifies the share name:
 
         tasks:
-        - ceph:
-        - ceph-fuse:
+        - zbkc:
+        - zbkc-fuse:
         - samba:
             samba.0:
-                cephfuse: "{testdir}/mnt.0"
+                zbkcfuse: "{testdir}/mnt.0"
         - cifs-mount:
             client.0:
-                share: cephfuse
+                share: zbkcfuse
 
     :param ctx: Context
     :param config: Configuration
@@ -81,7 +81,7 @@ def task(ctx, config):
             )
 
         rolestr = 'client.{id_}'.format(id_=id_)
-        unc = "ceph"
+        unc = "zbkc"
         log.info("config: {c}".format(c=config))
         if config[rolestr] is not None and 'share' in config[rolestr]:
             unc = config[rolestr]['share']

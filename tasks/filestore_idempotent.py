@@ -13,7 +13,7 @@ def task(ctx, config):
     """
     Test filestore/filejournal handling of non-idempotent events.
 
-    Currently this is a kludge; we require the ceph task preceeds us just
+    Currently this is a kludge; we require the zbkc task preceeds us just
     so that we get the tarball installed to run the test binary.
 
     :param ctx: Context
@@ -36,7 +36,7 @@ def task(ctx, config):
 
     testdir = teuthology.get_testdir(ctx)
 
-    dir = '%s/ceph.data/test.%s' % (testdir, client)
+    dir = '%s/zbkc.data/test.%s' % (testdir, client)
 
     seed = str(int(random.uniform(1,100)))
 
@@ -48,10 +48,10 @@ def task(ctx, config):
                 'cd', dir,
                 run.Raw('&&'),
                 'wget','-q', '-Orun_seed_to.sh',
-                'http://git.ceph.com/?p=ceph.git;a=blob_plain;f=src/test/objectstore/run_seed_to.sh;hb=HEAD',
+                'http://git.zbkc.com/?p=zbkc.git;a=blob_plain;f=src/test/objectstore/run_seed_to.sh;hb=HEAD',
                 run.Raw('&&'),
                 'wget','-q', '-Orun_seed_to_range.sh',
-                'http://git.ceph.com/?p=ceph.git;a=blob_plain;f=src/test/objectstore/run_seed_to_range.sh;hb=HEAD',
+                'http://git.zbkc.com/?p=zbkc.git;a=blob_plain;f=src/test/objectstore/run_seed_to_range.sh;hb=HEAD',
                 run.Raw('&&'),
                 'chmod', '+x', 'run_seed_to.sh', 'run_seed_to_range.sh',
                 ]);

@@ -3,7 +3,7 @@ Thrash -- Simulate random osd failures.
 """
 import contextlib
 import logging
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 
 
@@ -22,7 +22,7 @@ def task(ctx, config):
 
     The config is optional, and is a dict containing some or all of:
 
-    cluster: (default 'ceph') the name of the cluster to thrash
+    cluster: (default 'zbkc') the name of the cluster to thrash
 
     min_in: (default 3) the minimum number of OSDs to keep in the
        cluster
@@ -107,7 +107,7 @@ def task(ctx, config):
     chance_test_map_discontinuity: (0) chance to test map discontinuity
     map_discontinuity_sleep_time: (40) time to wait for map trims
 
-    ceph_objectstore_tool: (true) whether to export/import a pg while an osd is down
+    zbkc_objectstore_tool: (true) whether to export/import a pg while an osd is down
     chance_move_pg: (1.0) chance of moving a pg if more than 1 osd is down (default 100%)
 
     optrack_toggle_delay: (2.0) duration to delay between toggling op tracker
@@ -117,15 +117,15 @@ def task(ctx, config):
 
     noscrub_toggle_delay: (2.0) duration to delay between toggling noscrub
 
-    disable_objectstore_tool_tests: (false) disable ceph_objectstore_tool based
+    disable_objectstore_tool_tests: (false) disable zbkc_objectstore_tool based
                                     tests
 
     example:
 
     tasks:
-    - ceph:
+    - zbkc:
     - thrashosds:
-        cluster: ceph
+        cluster: zbkc
         chance_down: 10
         op_delay: 3
         min_in: 1
@@ -150,7 +150,7 @@ def task(ctx, config):
     overrides = ctx.config.get('overrides', {})
     log.info("overrides is {overrides}".format(overrides=str(overrides)))
     teuthology.deep_merge(config, overrides.get('thrashosds', {}))
-    cluster = config.get('cluster', 'ceph')
+    cluster = config.get('cluster', 'zbkc')
 
     log.info("config is {config}".format(config=str(config)))
 
@@ -182,7 +182,7 @@ def task(ctx, config):
             cluster_manager.config[f] = config.get(f)
 
     log.info('Beginning thrashosds...')
-    thrash_proc = ceph_manager.Thrasher(
+    thrash_proc = zbkc_manager.Thrasher(
         cluster_manager,
         config,
         logger=log.getChild('thrasher')

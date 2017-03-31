@@ -8,7 +8,7 @@ import os.path
 import shutil
 import tempfile
 
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 
 log = logging.getLogger(__name__)
@@ -58,10 +58,10 @@ def task(ctx, config):
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
 
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'))
+        logger=log.getChild('zbkc_manager'))
 
     mons = ctx.cluster.only(teuthology.is_type('mon'))
     assert mons
@@ -83,7 +83,7 @@ def task(ctx, config):
                 cluster=cluster,
                 mon=m))
             manager.kill_mon(m)
-            mon_data = os.path.join('/var/lib/ceph/mon/',
+            mon_data = os.path.join('/var/lib/zbkc/mon/',
                                     '{0}-{1}'.format(cluster_name, m))
             if m == mon_id:
                 # so we will only need to recreate the store.db for the
@@ -133,32 +133,32 @@ def task(ctx, config):
 
     # recover the first_mon with re-built mon db
     # pull from recovered leveldb from client
-    mon_store_dir = os.path.join('/var/lib/ceph/mon',
+    mon_store_dir = os.path.join('/var/lib/zbkc/mon',
                                  '{0}-{1}'.format(cluster_name, mon_id))
     push_directory(local_mstore, mon, mon_store_dir)
-    mon.run(args=['sudo', 'chown', '-R', 'ceph:ceph', mon_store_dir])
+    mon.run(args=['sudo', 'chown', '-R', 'zbkc:zbkc', mon_store_dir])
     shutil.rmtree(local_mstore)
-    default_keyring = '/etc/ceph/{cluster}.keyring'.format(
+    default_keyring = '/etc/zbkc/{cluster}.keyring'.format(
         cluster=cluster_name)
     keyring_path = config.get('keyring_path', default_keyring)
     # fill up the caps in the keyring file
     mon.run(args=['sudo',
-                  'ceph-authtool', keyring_path,
+                  'zbkc-authtool', keyring_path,
                   '-n', 'mon.',
                   '--cap', 'mon', 'allow *'])
     mon.run(args=['sudo',
-                  'ceph-authtool', keyring_path,
+                  'zbkc-authtool', keyring_path,
                   '-n', 'client.admin',
                   '--cap', 'mon', 'allow *',
                   '--cap', 'osd', 'allow *',
                   '--cap', 'mds', 'allow *'])
-    mon.run(args=['sudo', '-u', 'ceph',
-                  'ceph-monstore-tool', mon_store_dir,
+    mon.run(args=['sudo', '-u', 'zbkc',
+                  'zbkc-monstore-tool', mon_store_dir,
                   'rebuild', '--', '--keyring',
                   keyring_path])
 
     # revive monitors
-    # the initial monmap is in the ceph.conf, so we are good.
+    # the initial monmap is in the zbkc.conf, so we are good.
     n_mons = 0
     for remote, roles in mons.remotes.iteritems():
         is_mon = teuthology.is_type('mon')
@@ -174,7 +174,7 @@ def task(ctx, config):
                 remote.run(
                     args=[
                         'sudo',
-                        'ceph-mon',
+                        'zbkc-mon',
                         '--cluster', cluster,
                         '--mkfs',
                         '-i', m,

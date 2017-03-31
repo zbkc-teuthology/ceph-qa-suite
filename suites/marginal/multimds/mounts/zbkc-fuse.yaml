@@ -1,0 +1,7 @@
+tasks:
+- install:
+- zbkc:
+    conf:
+      client:
+        fuse_default_permissions: 0
+- zbkc-fuse:

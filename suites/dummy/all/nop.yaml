@@ -1,5 +1,5 @@
 overrides:
-   ansible.cephlab:
+   ansible.zbkclab:
      playbook: users.yml
 roles:
     - [mon.a, mds.a, osd.0, osd.1, client.0]

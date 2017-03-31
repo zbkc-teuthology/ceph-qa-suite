@@ -1,11 +1,11 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       global:
         ms die on skipped message: false
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: xfs
 - kclient:
 - workunit:

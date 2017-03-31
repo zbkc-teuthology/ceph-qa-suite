@@ -6,6 +6,6 @@ openstack:
     size: 10 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: xfs
 - filestore_idempotent:

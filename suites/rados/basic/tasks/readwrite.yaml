@@ -1,12 +1,12 @@
 overrides:
-  ceph:
+  zbkc:
     crush_tunables: optimal
     conf:
       osd:
         osd_discard_disconnected_ops: false
 tasks:
 - install:
-- ceph:
+- zbkc:
 - rados:
     clients: [client.0]
     ops: 4000

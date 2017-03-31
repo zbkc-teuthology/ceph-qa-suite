@@ -1,10 +1,10 @@
 tasks:
 - exec:
     client.0:
-      - sudo ceph osd pool create datapool 4
+      - sudo zbkc osd pool create datapool 4
 
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         rbd default data pool: datapool

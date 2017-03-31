@@ -1,15 +1,15 @@
 meta:
 - desc: |
-   upgrade the ceph cluster
+   upgrade the zbkc cluster
 upgrade-sequence2:
    sequential:
-   - ceph.restart:
+   - zbkc.restart:
        daemons: [mon.a, mon.b, mon.c, osd.0, osd.1, osd.2, osd.3]
        wait-for-healthy: false
        wait-for-osds-up: true
    - exec:
        mon.a:
-         - ceph osd set require_kraken_osds
-   - ceph.restart:
+         - zbkc osd set require_kraken_osds
+   - zbkc.restart:
        daemons: [osd.0]
-   - print: "**** done ceph.restart all"
+   - print: "**** done zbkc.restart all"

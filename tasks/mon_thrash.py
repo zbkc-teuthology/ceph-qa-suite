@@ -3,7 +3,7 @@ Monitor thrash
 """
 import logging
 import contextlib
-import ceph_manager
+import zbkc_manager
 import random
 import time
 import gevent
@@ -66,7 +66,7 @@ class MonitorThrasher:
     For example::
 
     tasks:
-    - ceph:
+    - zbkc:
     - mon_thrash:
         revive_delay: 20
         thrash_delay: 1
@@ -75,7 +75,7 @@ class MonitorThrasher:
         seed: 31337
         maintain_quorum: true
         thrash_many: true
-    - ceph-fuse:
+    - zbkc-fuse:
     - workunit:
         clients:
           all:
@@ -156,7 +156,7 @@ class MonitorThrasher:
         Thrash the monitor specified.
         :param mon: monitor to thrash
         """
-        addr = self.ctx.ceph['ceph'].conf['mon.%s' % mon]['mon addr']
+        addr = self.ctx.zbkc['zbkc'].conf['mon.%s' % mon]['mon addr']
         self.log('thrashing mon.{id}@{addr} store'.format(id=mon, addr=addr))
         out = self.manager.raw_cluster_cmd('-m', addr, 'sync', 'force')
         j = json.loads(out)
@@ -325,10 +325,10 @@ def task(ctx, config):
     log.info('Beginning mon_thrash...')
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
     thrash_proc = MonitorThrasher(ctx,
         manager, config,

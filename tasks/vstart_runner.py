@@ -1,27 +1,27 @@
 """
-vstart_runner: override Filesystem and Mount interfaces to run a CephFSTestCase against a vstart
-ceph instance instead of a packaged/installed cluster.  Use this to turn around test cases
+vstart_runner: override Filesystem and Mount interfaces to run a ZbkcFSTestCase against a vstart
+zbkc instance instead of a packaged/installed cluster.  Use this to turn around test cases
 quickly during development.
 
-Usage (assuming teuthology, ceph, ceph-qa-suite checked out in ~/git):
+Usage (assuming teuthology, zbkc, zbkc-qa-suite checked out in ~/git):
 
     # Activate the teuthology virtualenv
     source ~/git/teuthology/virtualenv/bin/activate
-    # Go into your ceph build directory
-    cd ~/git/ceph/build
+    # Go into your zbkc build directory
+    cd ~/git/zbkc/build
     # Start a vstart cluster
     MDS=2 MON=1 OSD=3 ../src/vstart.sh -n
     # Invoke a test using this script, with PYTHONPATH set appropriately
-    python ~/git/ceph-qa-suite/tasks/vstart_runner.py
+    python ~/git/zbkc-qa-suite/tasks/vstart_runner.py
 
     # Alternatively, if you use different paths, specify them as follows:
-    LD_LIBRARY_PATH=`pwd`/lib PYTHONPATH=~/git/teuthology:~/git/ceph-qa-suite:`pwd`/../src/pybind:`pwd`/lib/cython_modules/lib.2 python ~/git/ceph-qa-suite/tasks/vstart_runner.py
+    LD_LIBRARY_PATH=`pwd`/lib PYTHONPATH=~/git/teuthology:~/git/zbkc-qa-suite:`pwd`/../src/pybind:`pwd`/lib/cython_modules/lib.2 python ~/git/zbkc-qa-suite/tasks/vstart_runner.py
 
     # If you wish to drop to a python shell on failures, use --interactive:
-    python ~/git/ceph-qa-suite/tasks/vstart_runner.py --interactive
+    python ~/git/zbkc-qa-suite/tasks/vstart_runner.py --interactive
 
     # If you wish to run a named test case, pass it as an argument:
-    python ~/git/ceph-qa-suite/tasks/vstart_runner.py tasks.cephfs.test_data_scan
+    python ~/git/zbkc-qa-suite/tasks/vstart_runner.py tasks.zbkcfs.test_data_scan
 
 """
 
@@ -86,7 +86,7 @@ if os.path.exists("./CMakeCache.txt") and os.path.exists("./bin"):
     # A list of candidate paths for each package we need
     guesses = [
         ["~/git/teuthology", "~/scm/teuthology", "~/teuthology"],
-        ["~/git/ceph-qa-suite", "~/scm/ceph-qa-suite", "~/ceph-qa-suite"],
+        ["~/git/zbkc-qa-suite", "~/scm/zbkc-qa-suite", "~/zbkc-qa-suite"],
         ["lib/cython_modules/lib.2"],
         ["../src/pybind"],
     ]
@@ -105,15 +105,15 @@ if os.path.exists("./CMakeCache.txt") and os.path.exists("./bin"):
 
 try:
     from teuthology.exceptions import CommandFailedError
-    from tasks.ceph_manager import CephManager
-    from tasks.cephfs.fuse_mount import FuseMount
-    from tasks.cephfs.filesystem import Filesystem, MDSCluster, CephCluster
+    from tasks.zbkc_manager import ZbkcManager
+    from tasks.zbkcfs.fuse_mount import FuseMount
+    from tasks.zbkcfs.filesystem import Filesystem, MDSCluster, ZbkcCluster
     from mgr.mgr_test_case import MgrCluster
     from teuthology.contextutil import MaxWhileTries
     from teuthology.task import interactive
 except ImportError:
     sys.stderr.write("***\nError importing packages, have you activated your teuthology virtualenv "
-                     "and set PYTHONPATH to point to teuthology and ceph-qa-suite?\n***\n\n")
+                     "and set PYTHONPATH to point to teuthology and zbkc-qa-suite?\n***\n\n")
     raise
 
 # Must import after teuthology because of gevent monkey patching
@@ -239,7 +239,7 @@ class LocalRemote(object):
             while i < len(args):
                 if args[i] == 'adjust-ulimits':
                     i += 1
-                elif args[i] == 'ceph-coverage':
+                elif args[i] == 'zbkc-coverage':
                     i += 2
                 elif args[i] == 'timeout':
                     i += 2
@@ -314,7 +314,7 @@ class LocalDaemon(object):
         lines = ps_txt.split("\n")[1:]
 
         for line in lines:
-            if line.find("ceph-{0} -i {1}".format(self.daemon_type, self.daemon_id)) != -1:
+            if line.find("zbkc-{0} -i {1}".format(self.daemon_type, self.daemon_id)) != -1:
                 log.info("Found ps line for daemon: {0}".format(line))
                 return int(line.split()[1])
         log.info("No match for {0} {1}: {2}".format(
@@ -344,7 +344,7 @@ class LocalDaemon(object):
         if self._get_pid() is not None:
             self.stop()
 
-        self.proc = self.controller.run([os.path.join(BIN_PREFIX, "./ceph-{0}".format(self.daemon_type)), "-i", self.daemon_id])
+        self.proc = self.controller.run([os.path.join(BIN_PREFIX, "./zbkc-{0}".format(self.daemon_type)), "-i", self.daemon_id])
 
 
 def safe_kill(pid):
@@ -367,7 +367,7 @@ class LocalFuseMount(FuseMount):
 
     @property
     def config_path(self):
-        return "./ceph.conf"
+        return "./zbkc.conf"
 
     def get_keyring_path(self):
         # This is going to end up in a config file, so use an absolute path
@@ -387,9 +387,9 @@ class LocalFuseMount(FuseMount):
         return BIN_PREFIX
 
     def _asok_path(self):
-        # In teuthology, the asok is named after the PID of the ceph-fuse process, because it's
+        # In teuthology, the asok is named after the PID of the zbkc-fuse process, because it's
         # run foreground.  When running it daemonized however, the asok is named after
-        # the PID of the launching process, not the long running ceph-fuse process.  Therefore
+        # the PID of the launching process, not the long running zbkc-fuse process.  Therefore
         # we need to give an exact path here as the logic for checking /proc/ for which
         # asok is alive does not work.
         path = "./out/client.{0}.{1}.asok".format(self.client_id, self.fuse_daemon.subproc.pid)
@@ -428,12 +428,12 @@ class LocalFuseMount(FuseMount):
             else:
                 return []
 
-        # Before starting ceph-fuse process, note the contents of
+        # Before starting zbkc-fuse process, note the contents of
         # /sys/fs/fuse/connections
         pre_mount_conns = list_connections()
         log.info("Pre-mount connections: {0}".format(pre_mount_conns))
 
-        prefix = [os.path.join(BIN_PREFIX, "ceph-fuse")]
+        prefix = [os.path.join(BIN_PREFIX, "zbkc-fuse")]
         if os.getuid() != 0:
             prefix += ["--client-die-on-failed-remount=false"]
 
@@ -491,13 +491,13 @@ class LocalFuseMount(FuseMount):
         ], wait=False)
 
 
-class LocalCephManager(CephManager):
+class LocalZbkcManager(ZbkcManager):
     def __init__(self):
         # Deliberately skip parent init, only inheriting from it to get
         # util methods like osd_dump that sit on top of raw_cluster_cmd
         self.controller = LocalRemote()
 
-        # A minority of CephManager fns actually bother locking for when
+        # A minority of ZbkcManager fns actually bother locking for when
         # certain teuthology tests want to run tasks in parallel
         self.lock = threading.RLock()
 
@@ -508,8 +508,8 @@ class LocalCephManager(CephManager):
         """
         return LocalRemote()
 
-    def run_ceph_w(self):
-        proc = self.controller.run([os.path.join(BIN_PREFIX, "ceph"), "-w"], wait=False, stdout=StringIO())
+    def run_zbkc_w(self):
+        proc = self.controller.run([os.path.join(BIN_PREFIX, "zbkc"), "-w"], wait=False, stdout=StringIO())
         return proc
 
     def raw_cluster_cmd(self, *args):
@@ -517,19 +517,19 @@ class LocalCephManager(CephManager):
         args like ["osd", "dump"}
         return stdout string
         """
-        proc = self.controller.run([os.path.join(BIN_PREFIX, "ceph")] + list(args))
+        proc = self.controller.run([os.path.join(BIN_PREFIX, "zbkc")] + list(args))
         return proc.stdout.getvalue()
 
     def raw_cluster_cmd_result(self, *args):
         """
         like raw_cluster_cmd but don't check status, just return rc
         """
-        proc = self.controller.run([os.path.join(BIN_PREFIX, "ceph")] + list(args), check_status=False)
+        proc = self.controller.run([os.path.join(BIN_PREFIX, "zbkc")] + list(args), check_status=False)
         return proc.exitstatus
 
     def admin_socket(self, daemon_type, daemon_id, command, check_status=True):
         return self.controller.run(
-            args=[os.path.join(BIN_PREFIX, "ceph"), "daemon", "{0}.{1}".format(daemon_type, daemon_id)] + command, check_status=check_status
+            args=[os.path.join(BIN_PREFIX, "zbkc"), "daemon", "{0}.{1}".format(daemon_type, daemon_id)] + command, check_status=check_status
         )
 
     # FIXME: copypasta
@@ -567,11 +567,11 @@ class LocalCephManager(CephManager):
         return j
 
 
-class LocalCephCluster(CephCluster):
+class LocalZbkcCluster(ZbkcCluster):
     def __init__(self, ctx):
         # Deliberately skip calling parent constructor
         self._ctx = ctx
-        self.mon_manager = LocalCephManager()
+        self.mon_manager = LocalZbkcManager()
         self._conf = defaultdict(dict)
 
     def get_config(self, key, service_type=None):
@@ -588,10 +588,10 @@ class LocalCephCluster(CephCluster):
         return self.json_asok(['config', 'get', key], service_type, service_id)[key]
 
     def _write_conf(self):
-        # In teuthology, we have the honour of writing the entire ceph.conf, but
+        # In teuthology, we have the honour of writing the entire zbkc.conf, but
         # in vstart land it has mostly already been written and we need to carefully
         # append to it.
-        conf_path = "./ceph.conf"
+        conf_path = "./zbkc.conf"
         banner = "\n#LOCAL_TEST\n"
         existing_str = open(conf_path).read()
 
@@ -625,22 +625,22 @@ class LocalCephCluster(CephCluster):
 
         open(conf_path, "w").write(existing_str)
 
-    def set_ceph_conf(self, subsys, key, value):
+    def set_zbkc_conf(self, subsys, key, value):
         self._conf[subsys][key] = value
         self._write_conf()
 
-    def clear_ceph_conf(self, subsys, key):
+    def clear_zbkc_conf(self, subsys, key):
         del self._conf[subsys][key]
         self._write_conf()
 
 
-class LocalMDSCluster(LocalCephCluster, MDSCluster):
+class LocalMDSCluster(LocalZbkcCluster, MDSCluster):
     def __init__(self, ctx):
         super(LocalMDSCluster, self).__init__(ctx)
 
         self.mds_ids = ctx.daemons.daemons['mds'].keys()
         if not self.mds_ids:
-            raise RuntimeError("No MDSs found in ceph.conf!")
+            raise RuntimeError("No MDSs found in zbkc.conf!")
 
         self.mds_daemons = dict([(id_, LocalDaemon("mds", id_)) for id_ in self.mds_ids])
 
@@ -652,13 +652,13 @@ class LocalMDSCluster(LocalCephCluster, MDSCluster):
         return LocalFilesystem(self._ctx, create=name)
 
 
-class LocalMgrCluster(LocalCephCluster, MgrCluster):
+class LocalMgrCluster(LocalZbkcCluster, MgrCluster):
     def __init__(self, ctx):
         super(LocalMgrCluster, self).__init__(ctx)
 
         self.mgr_ids = ctx.daemons.daemons['mgr'].keys()
         if not self.mgr_ids:
-            raise RuntimeError("No manager daemonss found in ceph.conf!")
+            raise RuntimeError("No manager daemonss found in zbkc.conf!")
 
         self.mgr_daemons = dict([(id_, LocalDaemon("mgr", id_)) for id_ in self.mgr_ids])
 
@@ -677,21 +677,21 @@ class LocalFilesystem(Filesystem, LocalMDSCluster):
         self.metadata_pool_name = None
         self.data_pools = None
 
-        # Hack: cheeky inspection of ceph.conf to see what MDSs exist
+        # Hack: cheeky inspection of zbkc.conf to see what MDSs exist
         self.mds_ids = set()
-        for line in open("ceph.conf").readlines():
+        for line in open("zbkc.conf").readlines():
             match = re.match("^\[mds\.(.+)\]$", line)
             if match:
                 self.mds_ids.add(match.group(1))
 
         if not self.mds_ids:
-            raise RuntimeError("No MDSs found in ceph.conf!")
+            raise RuntimeError("No MDSs found in zbkc.conf!")
 
         self.mds_ids = list(self.mds_ids)
 
         log.info("Discovered MDS IDs: {0}".format(self.mds_ids))
 
-        self.mon_manager = LocalCephManager()
+        self.mon_manager = LocalZbkcManager()
 
         self.mds_daemons = dict([(id_, LocalDaemon("mds", id_)) for id_ in self.mds_ids])
 
@@ -703,7 +703,7 @@ class LocalFilesystem(Filesystem, LocalMDSCluster):
             if fscid is not None:
                 raise RuntimeError("cannot specify fscid when creating fs")
             if create is True:
-                self.name = 'cephfs'
+                self.name = 'zbkcfs'
             else:
                 self.name = create
             self.create()
@@ -754,11 +754,11 @@ class InteractiveFailureResult(unittest.TextTestResult):
 def exec_test():
     # Help developers by stopping up-front if their tree isn't built enough for all the
     # tools that the tests might want to use (add more here if needed)
-    require_binaries = ["ceph-dencoder", "cephfs-journal-tool", "cephfs-data-scan",
-                        "cephfs-table-tool", "ceph-fuse", "rados"]
+    require_binaries = ["zbkc-dencoder", "zbkcfs-journal-tool", "zbkcfs-data-scan",
+                        "zbkcfs-table-tool", "zbkc-fuse", "rados"]
     missing_binaries = [b for b in require_binaries if not os.path.exists(os.path.join(BIN_PREFIX, b))]
     if missing_binaries:
-        log.error("Some ceph binaries missing, please build them: {0}".format(" ".join(missing_binaries)))
+        log.error("Some zbkc binaries missing, please build them: {0}".format(" ".join(missing_binaries)))
         sys.exit(-1)
 
     test_dir = tempfile.mkdtemp()
@@ -775,7 +775,7 @@ def exec_test():
     lines = ps_txt.split("\n")[1:]
 
     for line in lines:
-        if 'ceph-fuse' in line or 'ceph-mds' in line:
+        if 'zbkc-fuse' in line or 'zbkc-mds' in line:
             pid = int(line.split()[0])
             log.warn("Killing stray process {0}".format(line))
             os.kill(pid, signal.SIGKILL)
@@ -800,8 +800,8 @@ def exec_test():
 
             # Shove some LocalDaemons into the ctx.daemons DaemonGroup instance so that any
             # tests that want to look these up via ctx can do so.
-            # Inspect ceph.conf to see what roles exist
-            for conf_line in open("ceph.conf").readlines():
+            # Inspect zbkc.conf to see what roles exist
+            for conf_line in open("zbkc.conf").readlines():
                 for svc_type in ["mon", "osd", "mds", "mgr"]:
                     if svc_type not in self.daemons.daemons:
                         self.daemons.daemons[svc_type] = {}
@@ -822,7 +822,7 @@ def exec_test():
         client_name = "client.{0}".format(client_id)
 
         if client_name not in open("./keyring").read():
-            p = remote.run(args=[os.path.join(BIN_PREFIX, "ceph"), "auth", "get-or-create", client_name,
+            p = remote.run(args=[os.path.join(BIN_PREFIX, "zbkc"), "auth", "get-or-create", client_name,
                                  "osd", "allow rw",
                                  "mds", "allow",
                                  "mon", "allow r"])
@@ -837,11 +837,11 @@ def exec_test():
         else:
             if os.path.exists(mount.mountpoint):
                 os.rmdir(mount.mountpoint)
-    ceph_cluster = LocalCephCluster(ctx)
+    zbkc_cluster = LocalZbkcCluster(ctx)
     mds_cluster = LocalMDSCluster(ctx)
     mgr_cluster = LocalMgrCluster(ctx)
 
-    from tasks.cephfs_test_runner import DecoratingLoader
+    from tasks.zbkcfs_test_runner import DecoratingLoader
 
     class LogStream(object):
         def __init__(self):
@@ -863,29 +863,29 @@ def exec_test():
     decorating_loader = DecoratingLoader({
         "ctx": ctx,
         "mounts": mounts,
-        "ceph_cluster": ceph_cluster,
+        "zbkc_cluster": zbkc_cluster,
         "mds_cluster": mds_cluster,
         "mgr_cluster": mgr_cluster,
     })
 
     # For the benefit of polling tests like test_full -- in teuthology land we set this
     # in a .yaml, here it's just a hardcoded thing for the developer's pleasure.
-    remote.run(args=[os.path.join(BIN_PREFIX, "ceph"), "tell", "osd.*", "injectargs", "--osd-mon-report-interval-max", "5"])
-    ceph_cluster.set_ceph_conf("osd", "osd_mon_report_interval_max", "5")
+    remote.run(args=[os.path.join(BIN_PREFIX, "zbkc"), "tell", "osd.*", "injectargs", "--osd-mon-report-interval-max", "5"])
+    zbkc_cluster.set_zbkc_conf("osd", "osd_mon_report_interval_max", "5")
 
     # Vstart defaults to two segments, which very easily gets a "behind on trimming" health warning
     # from normal IO latency.  Increase it for running teests.
-    ceph_cluster.set_ceph_conf("mds", "mds log max segments", "10")
+    zbkc_cluster.set_zbkc_conf("mds", "mds log max segments", "10")
 
     # Make sure the filesystem created in tests has uid/gid that will let us talk to
     # it after mounting it (without having to  go root).  Set in 'global' not just 'mds'
-    # so that cephfs-data-scan will pick it up too.
-    ceph_cluster.set_ceph_conf("global", "mds root ino uid", "%s" % os.getuid())
-    ceph_cluster.set_ceph_conf("global", "mds root ino gid", "%s" % os.getgid())
+    # so that zbkcfs-data-scan will pick it up too.
+    zbkc_cluster.set_zbkc_conf("global", "mds root ino uid", "%s" % os.getuid())
+    zbkc_cluster.set_zbkc_conf("global", "mds root ino gid", "%s" % os.getgid())
 
     # Monkeypatch get_package_version to avoid having to work out what kind of distro we're on
     def _get_package_version(remote, pkg_name):
-        # Used in cephfs tests to find fuse version.  Your development workstation *does* have >=2.9, right?
+        # Used in zbkcfs tests to find fuse version.  Your development workstation *does* have >=2.9, right?
         return "2.9"
 
     import teuthology.packaging
@@ -915,14 +915,14 @@ def exec_test():
         log.info("Executing modules: {0}".format(modules))
         module_suites = []
         for mod_name in modules:
-            # Test names like cephfs.test_auto_repair
+            # Test names like zbkcfs.test_auto_repair
             module_suites.append(decorating_loader.loadTestsFromName(mod_name))
         log.info("Loaded: {0}".format(list(module_suites)))
         overall_suite = suite.TestSuite(module_suites)
     else:
-        log.info("Executing all cephfs tests")
+        log.info("Executing all zbkcfs tests")
         overall_suite = decorating_loader.discover(
-            os.path.join(os.path.dirname(os.path.abspath(__file__)), "cephfs")
+            os.path.join(os.path.dirname(os.path.abspath(__file__)), "zbkcfs")
         )
 
     # Filter out tests that don't lend themselves to interactive running,

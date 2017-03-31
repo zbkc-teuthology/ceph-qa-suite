@@ -1,9 +1,9 @@
 meta:
 - desc: |
-   Run ceph on two nodes,
+   Run zbkc on two nodes,
    with a separate client 0,1,2 third node. 
    Use xfs beneath the osds.
-   CephFS tests running on client 2,3
+   ZbkcFS tests running on client 2,3
 roles:
 - - mon.a
   - mds.a
@@ -18,7 +18,7 @@ roles:
   - client.2
   - client.3
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
     - scrub mismatch
     - ScrubResult

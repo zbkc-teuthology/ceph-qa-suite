@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: xfs
     conf:
       mds:
@@ -11,7 +11,7 @@ tasks:
         debug ms: 1
         fuse default permissions: false
         fuse set user groups: true
-- ceph-fuse:
+- zbkc-fuse:
 - workunit:
     clients:
       all:

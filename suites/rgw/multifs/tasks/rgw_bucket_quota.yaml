@@ -2,7 +2,7 @@
 os_type: ubuntu
 tasks:
 - install:
-- ceph:
+- zbkc:
 - rgw: [client.0]
 - workunit:
     clients:

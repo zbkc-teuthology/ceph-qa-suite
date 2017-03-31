@@ -1,7 +1,7 @@
 #
 # Test the expected behavior of the
 #
-#    CEPH_FEATURE_ERASURE_CODE_PLUGINS_V3
+#    ZBKC_FEATURE_ERASURE_CODE_PLUGINS_V3
 #
 # feature.
 #
@@ -18,19 +18,19 @@ tasks:
 #
 - install:
     branch: hammer
-- ceph:
+- zbkc:
     fs: xfs
 #
 # We don't need mon.c for now: it will be used later to make sure an old
 # mon cannot join the quorum once the feature has been activated
 #
-- ceph.stop:
+- zbkc.stop:
     daemons: [mon.c]
 - exec:
     mon.a: 
       - |-
-        ceph osd erasure-code-profile set WRONG plugin=WRONG
-        ceph osd pool create poolWRONG 12 12 erasure WRONG 2>&1 | grep "failed to load plugin using profile WRONG"
+        zbkc osd erasure-code-profile set WRONG plugin=WRONG
+        zbkc osd pool create poolWRONG 12 12 erasure WRONG 2>&1 | grep "failed to load plugin using profile WRONG"
 #
 # Partial upgrade, osd.2 is not upgraded
 #
@@ -39,14 +39,14 @@ tasks:
 #
 # a is the leader
 #
-- ceph.restart:
+- zbkc.restart:
     daemons: [mon.a]
     wait-for-healthy: false
 - exec:
     mon.a:
       - |-
-        ceph osd erasure-code-profile set profile-shec k=2 m=1 c=1 plugin=shec 2>&1 | grep "unsupported by: the monitor cluster"
-- ceph.restart:
+        zbkc osd erasure-code-profile set profile-shec k=2 m=1 c=1 plugin=shec 2>&1 | grep "unsupported by: the monitor cluster"
+- zbkc.restart:
     daemons: [mon.b, osd.1, osd.0]
     wait-for-healthy: false
     wait-for-osds-up: true
@@ -57,11 +57,11 @@ tasks:
 - exec:
     mon.a: 
       - |-
-        ceph osd erasure-code-profile set profile-shec k=2 m=1 c=1 plugin=shec 2>&1 | grep "unsupported by: osd.2"
+        zbkc osd erasure-code-profile set profile-shec k=2 m=1 c=1 plugin=shec 2>&1 | grep "unsupported by: osd.2"
 #
 # Taking osd.2 out, the rest of the cluster is upgraded
 #
-- ceph.stop:
+- zbkc.stop:
     daemons: [osd.2]
 - sleep:
     duration: 60
@@ -70,11 +70,11 @@ tasks:
 #
 - exec:
     mon.a: 
-      - "ceph osd erasure-code-profile set profile-shec k=2 m=1 c=1 plugin=shec"
+      - "zbkc osd erasure-code-profile set profile-shec k=2 m=1 c=1 plugin=shec"
 #
 # osd.2 won't be able to join the because is does not support the feature
 #
-- ceph.restart:
+- zbkc.restart:
     daemons: [osd.2]
     wait-for-healthy: false
 - sleep:
@@ -82,11 +82,11 @@ tasks:
 - exec:
     osd.2: 
       - |-
-        grep "protocol feature.*missing" /var/log/ceph/ceph-osd.2.log
+        grep "protocol feature.*missing" /var/log/zbkc/zbkc-osd.2.log
 #
 # mon.c won't be able to join the because it does not support the feature
 #
-- ceph.restart:
+- zbkc.restart:
     daemons: [mon.c]
     wait-for-healthy: false
 - sleep:
@@ -94,4 +94,4 @@ tasks:
 - exec:
     mon.c: 
       - |-
-        grep "missing.*feature" /var/log/ceph/ceph-mon.c.log
+        grep "missing.*feature" /var/log/zbkc/zbkc-mon.c.log

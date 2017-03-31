@@ -6,8 +6,8 @@ openstack:
     size: 10 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: xfs
 - exec:
     client.0:
-      - ceph_test_filejournal
+      - zbkc_test_filejournal

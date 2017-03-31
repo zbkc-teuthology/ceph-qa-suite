@@ -1,0 +1,12 @@
+overrides:
+  zbkc:
+    log-whitelist:
+      - Scrub error on inode
+    conf:
+      mds:
+        mds log max segments: 1
+        mds cache max size: 1000
+tasks:
+- zbkcfs_test_runner:
+    modules:
+      - tasks.zbkcfs.test_scrub_checks

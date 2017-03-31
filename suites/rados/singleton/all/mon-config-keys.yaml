@@ -12,7 +12,7 @@ openstack:
       size: 10 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
 - workunit:
     clients:
       all:

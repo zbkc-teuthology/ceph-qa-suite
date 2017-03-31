@@ -1,0 +1,6 @@
+meta:
+- desc: "Tell zbkc-ansible to discover OSD devices automatically"
+overrides:
+  zbkc_ansible:
+    vars:
+      osd_auto_discovery: true

@@ -193,9 +193,9 @@ def run_fio(remote, config, rbd_test_dir):
         remote.run(args=['cd' , run.Raw(rbd_test_dir),
                          run.Raw(';'), 'wget' , fio , run.Raw(';'), run.Raw('tar -xvf fio*tar.gz'), run.Raw(';'),
                          run.Raw('cd fio-fio*'), 'configure', run.Raw(';') ,'make'])
-        remote.run(args=['ceph', '-s'])
+        remote.run(args=['zbkc', '-s'])
         remote.run(args=['sudo', run.Raw('{tdir}/fio-fio-{v}/fio {f}'.format(tdir=rbd_test_dir,v=fio_version,f=fio_config.name))])
-        remote.run(args=['ceph', '-s'])
+        remote.run(args=['zbkc', '-s'])
     finally:
         out=StringIO.StringIO()
         remote.run(args=['rbd','showmapped', '--format=json'], stdout=out)

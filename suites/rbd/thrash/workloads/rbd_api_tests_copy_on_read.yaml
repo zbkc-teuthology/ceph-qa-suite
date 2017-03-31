@@ -6,7 +6,7 @@ tasks:
     env:
       RBD_FEATURES: "61"
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         rbd clone copy on read: true

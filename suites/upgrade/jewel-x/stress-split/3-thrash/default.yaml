@@ -3,7 +3,7 @@ meta:
    randomly kill and revive osd
    small chance to increase the number of pgs
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
     - wrongly marked me down
     - objects unfound and apparently lost

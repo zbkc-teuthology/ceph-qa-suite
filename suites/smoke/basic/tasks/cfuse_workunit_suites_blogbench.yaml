@@ -1,8 +1,8 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: xfs
-- ceph-fuse:
+- zbkc-fuse:
 - workunit:
     clients:
       all:

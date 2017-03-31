@@ -1,6 +1,6 @@
 tasks:
 - install: null
-- ceph:
+- zbkc:
     fs: btrfs
     log-whitelist:
     - wrongly marked me down
@@ -11,15 +11,15 @@ tasks:
     timeout: 1200
 - exec:
     client.0:
-    - sudo ceph osd pool create base 4
-    - sudo ceph osd pool create cache 4
-    - sudo ceph osd tier add base cache
-    - sudo ceph osd tier cache-mode cache writeback
-    - sudo ceph osd tier set-overlay base cache
-    - sudo ceph osd pool set cache hit_set_type bloom
-    - sudo ceph osd pool set cache hit_set_count 8
-    - sudo ceph osd pool set cache hit_set_period 3600
-    - sudo ceph osd pool set cache target_max_objects 250
+    - sudo zbkc osd pool create base 4
+    - sudo zbkc osd pool create cache 4
+    - sudo zbkc osd tier add base cache
+    - sudo zbkc osd tier cache-mode cache writeback
+    - sudo zbkc osd tier set-overlay base cache
+    - sudo zbkc osd pool set cache hit_set_type bloom
+    - sudo zbkc osd pool set cache hit_set_count 8
+    - sudo zbkc osd pool set cache hit_set_period 3600
+    - sudo zbkc osd pool set cache target_max_objects 250
 - rados:
     clients:
     - client.0

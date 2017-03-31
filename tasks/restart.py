@@ -49,7 +49,7 @@ def get_tests(ctx, config, role, remote, testdir):
             run.Raw('&&'),
             'git',
             'archive',
-            '--remote=git://git.ceph.com/ceph.git',
+            '--remote=git://git.zbkc.com/zbkc.git',
             '%s:qa/workunits' % refspec,
             run.Raw('|'),
             'tar',
@@ -83,7 +83,7 @@ def task(ctx, config):
 
         tasks:
         - install:
-        - ceph:
+        - zbkc:
         - restart:
             exec:
               client.0:
@@ -119,7 +119,7 @@ def task(ctx, config):
                         args.append(run.Raw(env_arg))
                 args.extend([
                             'adjust-ulimits',
-                            'ceph-coverage',
+                            'zbkc-coverage',
                             '{tdir}/archive/coverage'.format(tdir=testdir),
                             '{srcdir}/{c}'.format(
                                 srcdir=srcdir,

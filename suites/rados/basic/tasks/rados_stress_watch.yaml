@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
 - workunit:
     clients:
       client.0:

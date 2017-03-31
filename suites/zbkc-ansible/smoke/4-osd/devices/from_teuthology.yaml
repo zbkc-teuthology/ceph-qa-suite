@@ -1,0 +1,6 @@
+meta:
+- desc: "Have teuthology tell zbkc-ansible which OSD devices to use"
+overrides:
+  zbkc_ansible:
+    vars:
+      osd_auto_discovery: false

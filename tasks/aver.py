@@ -23,7 +23,7 @@ def task(ctx, config):
     - aver:
         input: bench_output.csv
         validations:
-        - expect performance(alg='ceph') > performance(alg='raw')
+        - expect performance(alg='zbkc') > performance(alg='raw')
         - for size > 3 expect avg_throughput > 2000
     """
     log.info('Beginning aver...')

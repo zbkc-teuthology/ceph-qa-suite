@@ -1,0 +1,5 @@
+tasks:
+- localdir: [client.0]
+- samba:
+    samba.0:
+      zbkc: "{testdir}/mnt.0"

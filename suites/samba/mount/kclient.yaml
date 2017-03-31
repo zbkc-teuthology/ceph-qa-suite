@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       global:
         ms die on skipped message: false
@@ -10,5 +10,5 @@ tasks:
 - kclient: [client.0]
 - samba:
     samba.0:
-      ceph: "{testdir}/mnt.0"
+      zbkc: "{testdir}/mnt.0"
 

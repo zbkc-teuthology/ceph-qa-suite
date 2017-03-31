@@ -1,0 +1,19 @@
+meta:
+- desc: "Build the cluster using zbkc-ansible; then check health and make the keyring readable"
+tasks:
+- zbkc_ansible:
+- exec:
+    mon.a:
+      - "sudo zbkc health"
+- exec:
+    all:
+      - "KEYRING=/etc/zbkc/zbkc.client.admin.keyring; test -f $KEYRING && sudo chmod o+r $KEYRING"
+- install.ship_utilities:
+overrides:
+  zbkc_ansible:
+    vars:
+      zbkc_test: true
+openstack:
+  - volumes:
+      count: 3
+      size: 20  # GB

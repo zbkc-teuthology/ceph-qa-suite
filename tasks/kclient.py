@@ -6,7 +6,7 @@ import logging
 
 from teuthology.misc import deep_merge
 from teuthology import misc
-from cephfs.kernel_mount import KernelMount
+from zbkcfs.kernel_mount import KernelMount
 
 log = logging.getLogger(__name__)
 
@@ -18,20 +18,20 @@ def task(ctx, config):
     The config is optional and defaults to mounting on all clients. If
     a config is given, it is expected to be a list of clients to do
     this operation on. This lets you e.g. set up one client with
-    ``ceph-fuse`` and another with ``kclient``.
+    ``zbkc-fuse`` and another with ``kclient``.
 
     Example that mounts all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - kclient:
         - interactive:
 
-    Example that uses both ``kclient` and ``ceph-fuse``::
+    Example that uses both ``kclient` and ``zbkc-fuse``::
 
         tasks:
-        - ceph:
-        - ceph-fuse: [client.0]
+        - zbkc:
+        - zbkc-fuse: [client.0]
         - kclient: [client.1]
         - interactive:
 
@@ -99,8 +99,8 @@ def task(ctx, config):
         mounts[id_] = kernel_mount
 
         if client_config.get('debug', False):
-            remote.run(args=["sudo", "bash", "-c", "echo 'module ceph +p' > /sys/kernel/debug/dynamic_debug/control"])
-            remote.run(args=["sudo", "bash", "-c", "echo 'module libceph +p' > /sys/kernel/debug/dynamic_debug/control"])
+            remote.run(args=["sudo", "bash", "-c", "echo 'module zbkc +p' > /sys/kernel/debug/dynamic_debug/control"])
+            remote.run(args=["sudo", "bash", "-c", "echo 'module libzbkc +p' > /sys/kernel/debug/dynamic_debug/control"])
 
         kernel_mount.mount()
 

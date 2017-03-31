@@ -1,5 +1,5 @@
 """
-Special case divergence test with ceph-objectstore-tool export/remove/import
+Special case divergence test with zbkc-objectstore-tool export/remove/import
 """
 import logging
 import time
@@ -16,10 +16,10 @@ log = logging.getLogger(__name__)
 def task(ctx, config):
     """
     Test handling of divergent entries with prior_version
-    prior to log_tail and a ceph-objectstore-tool export/import
+    prior to log_tail and a zbkc-objectstore-tool export/import
 
     overrides:
-      ceph:
+      zbkc:
         conf:
           osd:
             debug osd: 5
@@ -31,7 +31,7 @@ def task(ctx, config):
     assert isinstance(config, dict), \
         'divergent_priors task only accepts a dict for configuration'
 
-    manager = ctx.managers['ceph']
+    manager = ctx.managers['zbkc']
 
     while len(manager.get_osd_status()['up']) < 3:
         time.sleep(10)
@@ -151,10 +151,10 @@ def task(ctx, config):
         cluster.only('osd.{o}'.format(o=divergent)).remotes.iterkeys()
     FSPATH = manager.get_filepath()
     JPATH = os.path.join(FSPATH, "journal")
-    prefix = ("sudo adjust-ulimits ceph-objectstore-tool "
+    prefix = ("sudo adjust-ulimits zbkc-objectstore-tool "
               "--data-path {fpath} --journal-path {jpath} "
               "--log-file="
-              "/var/log/ceph/objectstore_tool.$$.log ".
+              "/var/log/zbkc/objectstore_tool.$$.log ".
               format(fpath=FSPATH, jpath=JPATH))
     pid = os.getpid()
     expfile = os.path.join(testdir, "exp.{pid}.out".format(pid=pid))

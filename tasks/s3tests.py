@@ -29,7 +29,7 @@ def extract_sync_client_data(ctx, client_name):
     """
     return_region_name = None
     return_dict = None
-    client = ctx.ceph['ceph'].conf.get(client_name, None)
+    client = ctx.zbkc['zbkc'].conf.get(client_name, None)
     if client:
         current_client_zone = client.get('rgw zone', None)
         if current_client_zone:
@@ -60,7 +60,7 @@ def extract_sync_client_data(ctx, client_name):
         else: #if client_zone:
             log.debug('No zone info for {host}'.format(host=client_name))
     else: # if client
-        log.debug('No ceph conf for {host}'.format(host=client_name))
+        log.debug('No zbkc conf for {host}'.format(host=client_name))
 
     return return_region_name, return_dict
 
@@ -128,12 +128,12 @@ def download(ctx, config):
     for (client, cconf) in config.items():
         branch = cconf.get('force-branch', None)
         if not branch:
-            ceph_branch = ctx.config.get('branch')
-            suite_branch = ctx.config.get('suite_branch', ceph_branch)
+            zbkc_branch = ctx.config.get('branch')
+            suite_branch = ctx.config.get('suite_branch', zbkc_branch)
             if suite_branch in s3_branches:
                 branch = cconf.get('branch', suite_branch)
 	    else:
-                branch = cconf.get('branch', 'ceph-' + suite_branch)
+                branch = cconf.get('branch', 'zbkc-' + suite_branch)
         if not branch:
             raise ValueError(
                 "Could not determine what branch to use for s3tests!")
@@ -144,7 +144,7 @@ def download(ctx, config):
             args=[
                 'git', 'clone',
                 '-b', branch,
-                teuth_config.ceph_git_base_url + 's3-tests.git',
+                teuth_config.zbkc_git_base_url + 's3-tests.git',
                 '{tdir}/s3-tests'.format(tdir=testdir),
                 ],
             )
@@ -202,7 +202,7 @@ def create_users(ctx, config):
             ctx.cluster.only(client).run(
                 args=[
                     'adjust-ulimits',
-                    'ceph-coverage',
+                    'zbkc-coverage',
                     '{tdir}/archive/coverage'.format(tdir=testdir),
                     'radosgw-admin',
                     '-n', client,
@@ -223,7 +223,7 @@ def create_users(ctx, config):
                 ctx.cluster.only(client).run(
                     args=[
                         'adjust-ulimits',
-                        'ceph-coverage',
+                        'zbkc-coverage',
                         '{tdir}/archive/coverage'.format(tdir=testdir),
                         'radosgw-admin',
                         '-n', client,
@@ -360,21 +360,21 @@ def task(ctx, config):
     To run all tests on all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw:
         - s3tests:
 
     To restrict testing to particular clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.0]
         - s3tests: [client.0]
 
     To run against a server on client.1 and increase the boto timeout to 10m::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.1]
         - s3tests:
             client.0:
@@ -384,7 +384,7 @@ def task(ctx, config):
     To pass extra arguments to nose (e.g. to run a certain test)::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.0]
         - s3tests:
             client.0:

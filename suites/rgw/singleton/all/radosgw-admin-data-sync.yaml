@@ -3,7 +3,7 @@ roles:
 - [osd.1, osd.2, osd.3, client.1]
 tasks:
 - install:
-- ceph:
+- zbkc:
     conf:
       client:
         debug ms: 1

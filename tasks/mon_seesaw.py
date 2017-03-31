@@ -7,7 +7,7 @@ import random
 from teuthology import misc as teuthology
 from teuthology.orchestra import run
 
-from ceph_manager import CephManager, write_conf
+from zbkc_manager import ZbkcManager, write_conf
 
 
 log = logging.getLogger(__name__)
@@ -23,7 +23,7 @@ def _get_next_port(ctx, ip, cluster):
     # assuming we have only one cluster here.
     used = []
     for name in teuthology.get_mon_names(ctx, cluster):
-        addr = ctx.ceph[cluster].conf[name]['mon addr']
+        addr = ctx.zbkc[cluster].conf[name]['mon addr']
         mon_ip, mon_port = addr.split(':')
         if mon_ip != ip:
             continue
@@ -41,7 +41,7 @@ def _setup_mon(ctx, manager, remote, mon, name, data_path, conf_path):
     # co-locate a new monitor on remote where an existing monitor is hosted
     cluster = manager.cluster
     remote.run(args=['sudo', 'mkdir', '-p', data_path])
-    keyring_path = '/etc/ceph/{cluster}.keyring'.format(
+    keyring_path = '/etc/zbkc/{cluster}.keyring'.format(
         cluster=manager.cluster)
     testdir = teuthology.get_testdir(ctx)
     monmap_path = '{tdir}/{cluster}.monmap'.format(tdir=testdir,
@@ -53,7 +53,7 @@ def _setup_mon(ctx, manager, remote, mon, name, data_path, conf_path):
     remote.run(
         args=[
             'sudo',
-            'ceph-mon',
+            'zbkc-mon',
             '--cluster', cluster,
             '--mkfs',
             '-i', mon,
@@ -63,18 +63,18 @@ def _setup_mon(ctx, manager, remote, mon, name, data_path, conf_path):
         teuthology.delete_file(remote, monmap_path)
     # raw_cluster_cmd() is performed using sudo, so sudo here also.
     teuthology.delete_file(manager.controller, monmap_path, sudo=True)
-    # update ceph.conf so that the ceph CLI is able to connect to the cluster
+    # update zbkc.conf so that the zbkc CLI is able to connect to the cluster
     if conf_path:
         ip = remote.ip_address
         port = _get_next_port(ctx, ip, cluster)
         mon_addr = '{ip}:{port}'.format(ip=ip, port=port)
-        ctx.ceph[cluster].conf[name] = {'mon addr': mon_addr}
+        ctx.zbkc[cluster].conf[name] = {'mon addr': mon_addr}
         write_conf(ctx, conf_path, cluster)
 
 
 def _teardown_mon(ctx, manager, remote, name, data_path, conf_path):
     cluster = manager.cluster
-    del ctx.ceph[cluster].conf[name]
+    del ctx.zbkc[cluster].conf[name]
     write_conf(ctx, conf_path, cluster)
     remote.run(args=['sudo', 'rm', '-rf', data_path])
 
@@ -82,9 +82,9 @@ def _teardown_mon(ctx, manager, remote, name, data_path, conf_path):
 @contextlib.contextmanager
 def _prepare_mon(ctx, manager, remote, mon):
     cluster = manager.cluster
-    data_path = '/var/lib/ceph/mon/{cluster}-{id}'.format(
+    data_path = '/var/lib/zbkc/mon/{cluster}-{id}'.format(
         cluster=cluster, id=mon)
-    conf_path = '/etc/ceph/{cluster}.conf'.format(cluster=cluster)
+    conf_path = '/etc/zbkc/{cluster}.conf'.format(cluster=cluster)
     name = 'mon.{0}'.format(mon)
     _setup_mon(ctx, manager, remote, mon, name, data_path, conf_path)
     yield
@@ -92,7 +92,7 @@ def _prepare_mon(ctx, manager, remote, mon):
                   data_path, conf_path)
 
 
-# run_daemon() in ceph.py starts a herd of daemons of the same type, but
+# run_daemon() in zbkc.py starts a herd of daemons of the same type, but
 # _run_daemon() starts only one instance.
 @contextlib.contextmanager
 def _run_daemon(ctx, remote, cluster, type_, id_):
@@ -102,13 +102,13 @@ def _run_daemon(ctx, remote, cluster, type_, id_):
     run_cmd = [
         'sudo',
         'adjust-ulimits',
-        'ceph-coverage',
+        'zbkc-coverage',
         coverage_dir,
         'daemon-helper',
         daemon_signal,
     ]
     run_cmd_tail = [
-        'ceph-%s' % (type_),
+        'zbkc-%s' % (type_),
         '-f',
         '--cluster', cluster,
         '-i', id_]
@@ -146,12 +146,12 @@ def task(ctx, config):
     """
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
-    manager = CephManager(mon, ctx=ctx, logger=log.getChild('ceph_manager'))
+    manager = ZbkcManager(mon, ctx=ctx, logger=log.getChild('zbkc_manager'))
 
     if config is None:
         config = {}
     assert isinstance(config, dict), \
-        "task ceph only supports a dictionary for configuration"
+        "task zbkc only supports a dictionary for configuration"
     overrides = ctx.config.get('overrides', {})
     teuthology.deep_merge(config, overrides.get('mon_seesaw', {}))
     victim = config.get('victim', random.choice(_get_mons(ctx)))
@@ -186,7 +186,7 @@ def task(ctx, config):
                 # not in monmap and have been in a quorum before; must have
                 # been removed
                 log.info('re-adding {mon}'.format(mon=victim))
-                data_path = '/var/lib/ceph/mon/{cluster}-{id}'.format(
+                data_path = '/var/lib/zbkc/mon/{cluster}-{id}'.format(
                     cluster=cluster, id=victim)
                 remote.run(args=['sudo', 'rm', '-rf', data_path])
                 name = 'mon.{0}'.format(victim)

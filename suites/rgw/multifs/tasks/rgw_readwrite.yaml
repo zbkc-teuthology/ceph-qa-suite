@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
 - rgw: [client.0]
 - s3readwrite:
     client.0:

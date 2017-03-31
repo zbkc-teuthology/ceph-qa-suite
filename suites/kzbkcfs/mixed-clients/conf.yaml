@@ -1,0 +1,7 @@
+overrides:
+  zbkc:
+    conf:
+      global:
+        ms die on skipped message: false
+      mds:
+        debug mds: 20

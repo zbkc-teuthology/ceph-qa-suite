@@ -33,7 +33,7 @@ def get_sambas(ctx, roles):
 @contextlib.contextmanager
 def task(ctx, config):
     """
-    Setup samba smbd with ceph vfs module.  This task assumes the samba
+    Setup samba smbd with zbkc vfs module.  This task assumes the samba
     package has already been installed via the install task.
 
     The config is optional and defaults to starting samba on all nodes.
@@ -47,7 +47,7 @@ def task(ctx, config):
         - install:
             project: samba
             extra_packages: ['samba']
-        - ceph:
+        - zbkc:
         - samba:
         - interactive:
 
@@ -65,24 +65,24 @@ def task(ctx, config):
             - [client.0, samba.0]
 
         tasks:
-        - ceph:
-        - ceph-fuse: [client.0]
+        - zbkc:
+        - zbkc-fuse: [client.0]
         - samba:
             samba.0:
-              cephfuse: "{testdir}/mnt.0"
+              zbkcfuse: "{testdir}/mnt.0"
 
-    This mounts ceph to {testdir}/mnt.0 using fuse, and starts smbd with
-    a UNC of //localhost/cephfuse.  Access through that UNC will be on
-    the ceph fuse mount point.
+    This mounts zbkc to {testdir}/mnt.0 using fuse, and starts smbd with
+    a UNC of //localhost/zbkcfuse.  Access through that UNC will be on
+    the zbkc fuse mount point.
 
     If no arguments are specified in the samba
-    role, the default behavior is to enable the ceph UNC //localhost/ceph
-    and use the ceph vfs module as the smbd backend.
+    role, the default behavior is to enable the zbkc UNC //localhost/zbkc
+    and use the zbkc vfs module as the smbd backend.
 
     :param ctx: Context
     :param config: Configuration
     """
-    log.info("Setting up smbd with ceph vfs...")
+    log.info("Setting up smbd with zbkc vfs...")
     assert config is None or isinstance(config, list) or isinstance(config, dict), \
         "task samba got invalid config"
 
@@ -103,10 +103,10 @@ def task(ctx, config):
 
         rolestr = "samba.{id_}".format(id_=id_)
 
-        confextras = """vfs objects = ceph
-  ceph:config_file = /etc/ceph/ceph.conf"""
+        confextras = """vfs objects = zbkc
+  zbkc:config_file = /etc/zbkc/zbkc.conf"""
 
-        unc = "ceph"
+        unc = "zbkc"
         backend = "/"
 
         if config[rolestr] is not None:
@@ -118,13 +118,13 @@ def task(ctx, config):
             (unc, backendstr) = config[rolestr].items()[0]
             backend = backendstr.format(testdir=testdir)
 
-        # on first samba role, set ownership and permissions of ceph root
+        # on first samba role, set ownership and permissions of zbkc root
         # so that samba tests succeed
         if config[rolestr] is None and id_ == samba_servers[0][0]:
             remote.run(
                     args=[
                         'mkdir', '-p', '/tmp/cmnt', run.Raw('&&'),
-                        'sudo', 'ceph-fuse', '/tmp/cmnt', run.Raw('&&'),
+                        'sudo', 'zbkc-fuse', '/tmp/cmnt', run.Raw('&&'),
                         'sudo', 'chown', 'ubuntu:ubuntu', '/tmp/cmnt/', run.Raw('&&'),
                         'sudo', 'chmod', '1777', '/tmp/cmnt/', run.Raw('&&'),
                         'sudo', 'umount', '/tmp/cmnt/', run.Raw('&&'),

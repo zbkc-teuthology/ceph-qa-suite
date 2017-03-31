@@ -1,7 +1,7 @@
 os_type: ubuntu
 overrides:
   install:
-    ceph:
+    zbkc:
       extra_packages: [rbd-nbd]
 tasks:
 - workunit:

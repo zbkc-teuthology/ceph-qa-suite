@@ -44,8 +44,8 @@ def run_radosgw_agent(ctx, config):
                 'cd', testdir, run.Raw('&&'),
                 'git', 'clone',
                 '-b', branch,
-#                'https://github.com/ceph/radosgw-agent.git',
-                'git://git.ceph.com/radosgw-agent.git',
+#                'https://github.com/zbkc/radosgw-agent.git',
+                'git://git.zbkc.com/radosgw-agent.git',
                 'radosgw-agent.{client}'.format(client=client),
                 ]
             )
@@ -134,7 +134,7 @@ def task(ctx, config):
     source client, destination client, and port to listen on.  Binds
     to 0.0.0.0. Port defaults to 8000. This must be run on clients
     that have the correct zone root pools and rgw zone set in
-    ceph.conf, or the task cannot read the region information from the
+    zbkc.conf, or the task cannot read the region information from the
     cluster.
 
     By default, this task will start an HTTP server that will trigger full
@@ -151,7 +151,7 @@ def task(ctx, config):
     An example::
 
       tasks:
-      - ceph:
+      - zbkc:
           conf:
             client.0:
               rgw zone = foo

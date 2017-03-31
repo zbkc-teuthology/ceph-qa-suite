@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     fs: ext4
     conf:
       global:
@@ -9,7 +9,7 @@ roles:
 - [mon.a, osd.0, osd.1, osd.2, client.0]
 tasks:
 - install:
-- ceph:
+- zbkc:
 - workunit:
     clients:
       all:

@@ -24,7 +24,7 @@ def create_image(ctx, config):
     For example::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd.create_image:
             client.0:
                 image_name: testimage
@@ -58,7 +58,7 @@ def create_image(ctx, config):
                                                                  size=size))
         args = [
                 'adjust-ulimits',
-                'ceph-coverage'.format(tdir=testdir),
+                'zbkc-coverage'.format(tdir=testdir),
                 '{tdir}/archive/coverage'.format(tdir=testdir),
                 'rbd',
                 '-p', 'rbd',
@@ -83,7 +83,7 @@ def create_image(ctx, config):
             remote.run(
                 args=[
                     'adjust-ulimits',
-                    'ceph-coverage',
+                    'zbkc-coverage',
                     '{tdir}/archive/coverage'.format(tdir=testdir),
                     'rbd',
                     '-p', 'rbd',
@@ -100,7 +100,7 @@ def clone_image(ctx, config):
     For example::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd.clone_image:
             client.0:
                 parent_name: testimage
@@ -133,7 +133,7 @@ def clone_image(ctx, config):
                     ('clone', parent_spec, name)]:
             args = [
                     'adjust-ulimits',
-                    'ceph-coverage'.format(tdir=testdir),
+                    'zbkc-coverage'.format(tdir=testdir),
                     '{tdir}/archive/coverage'.format(tdir=testdir),
                     'rbd', '-p', 'rbd'
                     ]
@@ -158,7 +158,7 @@ def clone_image(ctx, config):
                         ('snap', 'rm', parent_spec)]:
                 args = [
                         'adjust-ulimits',
-                        'ceph-coverage'.format(tdir=testdir),
+                        'zbkc-coverage'.format(tdir=testdir),
                         '{tdir}/archive/coverage'.format(tdir=testdir),
                         'rbd', '-p', 'rbd'
                         ]
@@ -173,7 +173,7 @@ def modprobe(ctx, config):
     For example::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd.create_image: [client.0]
         - rbd.modprobe: [client.0]
     """
@@ -216,7 +216,7 @@ def dev_create(ctx, config):
     For example::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd.create_image: [client.0]
         - rbd.modprobe: [client.0]
         - rbd.dev_create:
@@ -243,7 +243,7 @@ def dev_create(ctx, config):
             args=[
                 'sudo',
                 'adjust-ulimits',
-                'ceph-coverage',
+                'zbkc-coverage',
                 '{tdir}/archive/coverage'.format(tdir=testdir),
                 'rbd',
                 '--user', role.rsplit('.')[-1],
@@ -270,7 +270,7 @@ def dev_create(ctx, config):
                     'LD_LIBRARY_PATH={tdir}/binary/usr/local/lib'.format(tdir=testdir),
                     'sudo',
                     'adjust-ulimits',
-                    'ceph-coverage',
+                    'zbkc-coverage',
                     '{tdir}/archive/coverage'.format(tdir=testdir),
                     'rbd',
                     '-p', 'rbd',
@@ -326,7 +326,7 @@ def run_xfstests(ctx, config):
     For example::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd.run_xfstests:
             client.0:
                 count: 2
@@ -400,7 +400,7 @@ def run_xfstests_one_client(ctx, role, properties):
             'TESTDIR={tdir}'.format(tdir=testdir),
             'URL_BASE={url}'.format(url=xfstests_url),
             'adjust-ulimits',
-            'ceph-coverage',
+            'zbkc-coverage',
             '{tdir}/archive/coverage'.format(tdir=testdir),
             '/bin/bash',
             test_path,
@@ -432,7 +432,7 @@ def xfstests(ctx, config):
     For example::
 
         tasks:
-        - ceph:
+        - zbkc:
         # Image sizes are in MB
         - rbd.xfstests:
             client.0:
@@ -447,7 +447,7 @@ def xfstests(ctx, config):
                 tests: 'generic/100 xfs/003 xfs/005 xfs/006 generic/015'
                 randomize: true
                 xfstests_branch: master
-                xfstests_url: 'https://raw.github.com/ceph/branch/master/qa'
+                xfstests_url: 'https://raw.github.com/zbkc/branch/master/qa'
     """
     if config is None:
         config = { 'all': None }
@@ -499,7 +499,7 @@ def xfstests(ctx, config):
             )
 
         xfstests_branch = properties.get('xfstests_branch', 'master')
-        xfstests_url = properties.get('xfstests_url', 'https://raw.github.com/ceph/ceph/{branch}/qa'.format(branch=xfstests_branch))
+        xfstests_url = properties.get('xfstests_url', 'https://raw.github.com/zbkc/zbkc/{branch}/qa'.format(branch=xfstests_branch))
 
         xfstests_config[role] = dict(
             count=properties.get('count', 1),
@@ -539,13 +539,13 @@ def task(ctx, config):
     For example, you can specify which clients to run on::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd: [client.0, client.1]
 
     There are a few image options::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd:
             client.0: # uses defaults
             client.1:
@@ -557,14 +557,14 @@ def task(ctx, config):
     To use default options on all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd:
             all:
 
     To create 20GiB images and format them with xfs on all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rbd:
             all:
               image_size: 20480

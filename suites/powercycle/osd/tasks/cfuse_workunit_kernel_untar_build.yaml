@@ -1,10 +1,10 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         fuse_default_permissions: 0
 tasks:
-- ceph-fuse:
+- zbkc-fuse:
 - workunit:
     timeout: 6h
     clients:

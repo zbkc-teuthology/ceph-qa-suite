@@ -14,14 +14,14 @@ def task(ctx, config):
     in parallel. It is easy to add other daemon types which have the appropriate
     permissions, but I don't think anything else does.
     The config is just the number of pools to create. I recommend setting
-    "mon create pg interval" to a very low value in your ceph config to speed
+    "mon create pg interval" to a very low value in your zbkc config to speed
     this up.
     
     You probably want to do this to look at memory consumption, and
     maybe to test how performance changes with the number of PGs. For example:
     
     tasks:
-    - ceph:
+    - zbkc:
         config:
           mon:
             mon create pg interval: 1

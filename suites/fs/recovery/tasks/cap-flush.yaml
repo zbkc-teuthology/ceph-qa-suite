@@ -1,5 +1,5 @@
 
 tasks:
-  - cephfs_test_runner:
+  - zbkcfs_test_runner:
       modules:
-        - tasks.cephfs.test_cap_flush
+        - tasks.zbkcfs.test_cap_flush

@@ -1,9 +1,9 @@
 meta:
-- desc: run two ceph clusters and install rbd-mirror
+- desc: run two zbkc clusters and install rbd-mirror
 tasks:
 - install:
     extra_packages: [rbd-mirror]
-- ceph:
+- zbkc:
     cluster: cluster1
-- ceph:
+- zbkc:
     cluster: cluster2

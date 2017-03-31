@@ -10,12 +10,12 @@ openstack:
       size: 10 # GB
 
 overrides:
-  ceph:
+  zbkc:
     conf:
       osd:
         debug osd: 5
 
 tasks:
 - install:
-- ceph:
+- zbkc:
 - reg11184:

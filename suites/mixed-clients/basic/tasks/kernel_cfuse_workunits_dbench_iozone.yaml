@@ -1,18 +1,18 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       global:
         ms die on skipped message: false
 tasks:
 - install:
     branch: dumpling
-- ceph:
+- zbkc:
 - parallel:
    - user-workload
    - kclient-workload
 user-workload:
   sequential:
-  - ceph-fuse: [client.0]
+  - zbkc-fuse: [client.0]
   - workunit:
       clients:
          client.0:

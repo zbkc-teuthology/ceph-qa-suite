@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       mon:
         mon min osdmap epochs: 2
@@ -9,7 +9,7 @@ overrides:
         osd scrub max interval: 120
 tasks:
 - install:
-- ceph:
+- zbkc:
     log-whitelist:
     - wrongly marked me down
     - objects unfound and apparently lost

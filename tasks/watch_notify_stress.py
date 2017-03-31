@@ -23,7 +23,7 @@ def task(ctx, config):
     example:
 
     tasks:
-    - ceph:
+    - zbkc:
     - test_stress_watch:
         clients: [client.0]
     - interactive:
@@ -43,8 +43,8 @@ def task(ctx, config):
         (remote,) = ctx.cluster.only(role).remotes.iterkeys()
         remotes.append(remote)
 
-        args =['CEPH_CLIENT_ID={id_}'.format(id_=id_),
-               'CEPH_ARGS="{flags}"'.format(flags=config.get('flags', '')),
+        args =['ZBKC_CLIENT_ID={id_}'.format(id_=id_),
+               'ZBKC_ARGS="{flags}"'.format(flags=config.get('flags', '')),
                'daemon-helper',
                'kill',
                'multi_stress_watch foo foo'

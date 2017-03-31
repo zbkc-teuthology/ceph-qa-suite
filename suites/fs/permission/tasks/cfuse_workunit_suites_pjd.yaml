@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         fuse set user groups: true

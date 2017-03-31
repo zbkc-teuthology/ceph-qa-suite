@@ -1,16 +1,16 @@
 meta:
 - desc: |
-   Run ceph on two nodes, using one of them as a client,
+   Run zbkc on two nodes, using one of them as a client,
    with a separate client-only node. 
    Use xfs beneath the osds.
-   install ceph/jewel v10.2.0 point version
+   install zbkc/jewel v10.2.0 point version
    run workload and upgrade-sequence in parallel
-   install ceph/jewel latest version
+   install zbkc/jewel latest version
    run workload and upgrade-sequence in parallel
-   install ceph/-x version (jewel or kraken)
+   install zbkc/-x version (jewel or kraken)
    run workload and upgrade-sequence in parallel
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
     - reached quota
     - scrub
@@ -43,16 +43,16 @@ tasks:
 - print: "****  v10.2.0 about to install"
 - install:
     tag: v10.2.0
-    exclude_packages: ['ceph-mgr','libcephfs2','libcephfs-devel','libcephfs-dev', 'librgw2']
+    exclude_packages: ['zbkc-mgr','libzbkcfs2','libzbkcfs-devel','libzbkcfs-dev', 'librgw2']
 - print: "**** done v10.2.0 install"
-- ceph:
+- zbkc:
    fs: xfs
-- print: "**** done ceph xfs"
+- print: "**** done zbkc xfs"
 - sequential:
    - workload
 - print: "**** done workload v10.2.0"
 - install.upgrade:
-    exclude_packages: ['ceph-mgr','libcephfs2','libcephfs-devel','libcephfs-dev']
+    exclude_packages: ['zbkc-mgr','libzbkcfs2','libzbkcfs-devel','libzbkcfs-dev']
     mon.a:
       branch: jewel
     mon.b:
@@ -65,7 +65,7 @@ tasks:
    - upgrade-sequence_jewel
 - print: "**** done parallel jewel branch"
 - install.upgrade:
-    exclude_packages: ['ceph-mgr','libcephfs2','libcephfs-devel','libcephfs-dev']
+    exclude_packages: ['zbkc-mgr','libzbkcfs2','libzbkcfs-devel','libzbkcfs-dev']
     client.1:
       branch: jewel
 - print: "**** done branch: jewel install.upgrade on client.1"
@@ -110,43 +110,43 @@ workload_jewel:
      - print: "**** done rgw workload_jewel"
      - s3tests:
          client.0:
-           force-branch: ceph-jewel
+           force-branch: zbkc-jewel
            rgw_server: client.0
      - print: "**** done s3tests workload_jewel"
 upgrade-sequence_jewel:
    sequential:
    - print: "**** done branch: jewel install.upgrade"
-   - ceph.restart: [mds.a]
+   - zbkc.restart: [mds.a]
    - sleep:
        duration: 60
-   - ceph.restart: [osd.0]
+   - zbkc.restart: [osd.0]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.1]
+   - zbkc.restart: [osd.1]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.2]
+   - zbkc.restart: [osd.2]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.3]
+   - zbkc.restart: [osd.3]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.4]
+   - zbkc.restart: [osd.4]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.5]
+   - zbkc.restart: [osd.5]
    - sleep:
        duration: 60
-   - ceph.restart: [mon.a]
+   - zbkc.restart: [mon.a]
    - sleep:
        duration: 60
-   - ceph.restart: [mon.b]
+   - zbkc.restart: [mon.b]
    - sleep:
        duration: 60
-   - ceph.restart: [mon.c]
+   - zbkc.restart: [mon.c]
    - sleep:
        duration: 60
-   - print: "**** done ceph.restart all jewel branch mds/osd/mon"
+   - print: "**** done zbkc.restart all jewel branch mds/osd/mon"
 workload_x:
    sequential:
    - workunit:
@@ -169,45 +169,45 @@ workload_x:
    - print: "**** done rgw workload_x"
    - s3tests:
        client.1:
-         force-branch: ceph-jewel
+         force-branch: zbkc-jewel
          rgw_server: client.1
    - print: "**** done s3tests workload_x"
 upgrade-sequence_x:
    sequential:
-   - ceph.restart: [mds.a]
+   - zbkc.restart: [mds.a]
    - sleep:
        duration: 60
-   - ceph.restart: [mon.a]
+   - zbkc.restart: [mon.a]
    - sleep:
        duration: 60
-   - ceph.restart: [mon.b]
+   - zbkc.restart: [mon.b]
    - sleep:
        duration: 60
-   - ceph.restart: [mon.c]
+   - zbkc.restart: [mon.c]
    - sleep:
        duration: 60
-   - ceph.restart: [osd.0]
+   - zbkc.restart: [osd.0]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.1]
+   - zbkc.restart: [osd.1]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.2]
+   - zbkc.restart: [osd.2]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.3]
+   - zbkc.restart: [osd.3]
    - sleep:
        duration: 30
-   - ceph.restart: [osd.4]
+   - zbkc.restart: [osd.4]
    - sleep:
        duration: 30
-   - ceph.restart:
+   - zbkc.restart:
        daemons: [osd.5]
        wait-for-healthy: false
        wait-for-up-osds: true
    - exec:
        mon.a:
-         - ceph osd set require_kraken_osds
+         - zbkc osd set require_kraken_osds
    - sleep:
        duration: 60
-   - print: "**** done ceph.restart all -x branch mds/osd/mon"
+   - print: "**** done zbkc.restart all -x branch mds/osd/mon"

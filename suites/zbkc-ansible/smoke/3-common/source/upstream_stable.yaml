@@ -1,0 +1,7 @@
+meta:
+- desc: "Use a stable upstream Zbkc release"
+overrides:
+  zbkc_ansible:
+    vars:
+      zbkc_origin: upstream
+      zbkc_stable: true

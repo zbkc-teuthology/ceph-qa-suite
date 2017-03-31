@@ -36,7 +36,7 @@ def rgwadmin(ctx, client, cmd):
     testdir = teuthology.get_testdir(ctx)
     pre = [
         'adjust-ulimits',
-        'ceph-coverage',
+        'zbkc-coverage',
         '{tdir}/archive/coverage'.format(tdir=testdir),
         'radosgw-admin',
         '--log-to-stderr',

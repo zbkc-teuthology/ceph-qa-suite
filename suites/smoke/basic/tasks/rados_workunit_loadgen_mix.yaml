@@ -1,8 +1,8 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: ext4
-- ceph-fuse:
+- zbkc-fuse:
 - workunit:
     clients:
       all:

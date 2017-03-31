@@ -3,7 +3,7 @@ Handle clock skews in monitors.
 """
 import logging
 import contextlib
-import ceph_manager
+import zbkc_manager
 import time
 import gevent
 from StringIO import StringIO
@@ -70,7 +70,7 @@ class ClockSkewCheck:
         proc = remote.run(
             args=[
                 'sudo',
-                'ceph-mon',
+                'zbkc-mon',
                 '-i', first_mon[4:],
                 '--show-config-value', 'mon_clock_drift_allowed'
                 ], stdout=StringIO(), wait=True
@@ -241,10 +241,10 @@ def task(ctx, config):
     log.info('Beginning mon_clock_skew_check...')
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
 
     skew_check = ClockSkewCheck(ctx,

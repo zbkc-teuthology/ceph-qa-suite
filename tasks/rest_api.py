@@ -29,7 +29,7 @@ def run_rest_api_daemon(ctx, api_clients):
                     'sudo',
                     'daemon-helper',
                     'kill',
-                    'ceph-rest-api',
+                    'zbkc-rest-api',
                     '-n',
                     'client.rest{id}'.format(id=id_), ]
                 cl_rest_id = 'client.rest{id}'.format(id=id_)
@@ -41,7 +41,7 @@ def run_rest_api_daemon(ctx, api_clients):
                     wait=False,
                     )
                 for i in range(1, 12):
-                    log.info('testing for ceph-rest-api try {0}'.format(i))
+                    log.info('testing for zbkc-rest-api try {0}'.format(i))
                     run_cmd = [
                         'wget',
                         '-O',
@@ -57,7 +57,7 @@ def run_rest_api_daemon(ctx, api_clients):
                         break
                     time.sleep(5)
                 if proc.exitstatus != 0:
-                    raise RuntimeError('Cannot contact ceph-rest-api')
+                    raise RuntimeError('Cannot contact zbkc-rest-api')
     try:
         yield
 
@@ -75,19 +75,19 @@ def task(ctx, config):
     To start on on all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rest-api:
 
     To only run on certain clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rest-api: [client.0, client.3]
 
     or
 
         tasks:
-        - ceph:
+        - zbkc:
         - rest-api:
             client.0:
             client.3:
@@ -95,7 +95,7 @@ def task(ctx, config):
     The general flow of things here is:
         1. Find clients on which rest-api is supposed to run (api_clients)
         2. Generate keyring values
-        3. Start up ceph-rest-api daemons
+        3. Start up zbkc-rest-api daemons
     On cleanup:
         4. Stop the daemons
         5. Delete keyring value files.
@@ -115,15 +115,15 @@ def task(ctx, config):
         for whole_id_ in roles:
             if whole_id_ in api_clients:
                 id_ = whole_id_[len('client.'):]
-                keyring = '/etc/ceph/ceph.client.rest{id}.keyring'.format(
+                keyring = '/etc/zbkc/zbkc.client.rest{id}.keyring'.format(
                         id=id_)
                 rems.run(
                     args=[
                         'sudo',
                         'adjust-ulimits',
-                        'ceph-coverage',
+                        'zbkc-coverage',
                         coverage_dir,
-                        'ceph-authtool',
+                        'zbkc-authtool',
                         '--create-keyring',
                         '--gen-key',
                         '--name=client.rest{id}'.format(id=id_),
@@ -148,7 +148,7 @@ def task(ctx, config):
                         "echo",
                         '[client.rest{id}]'.format(id=id_),
                         run.Raw('>>'),
-                        "/etc/ceph/ceph.conf",
+                        "/etc/zbkc/zbkc.conf",
                         run.Raw("'")
                         ]
                     )
@@ -162,20 +162,20 @@ def task(ctx, config):
                         'restapi',
                         'keyring',
                         '=',
-                        '/etc/ceph/ceph.client.rest{id}.keyring'.format(id=id_),
+                        '/etc/zbkc/zbkc.client.rest{id}.keyring'.format(id=id_),
                         run.Raw('>>'),
-                        '/etc/ceph/ceph.conf',
+                        '/etc/zbkc/zbkc.conf',
                         run.Raw("'"),
                         ]
                     )
                 rems.run(
                     args=[
                         'sudo',
-                        'ceph',
+                        'zbkc',
                         'auth',
                         'import',
                         '-i',
-                        '/etc/ceph/ceph.client.rest{id}.keyring'.format(id=id_),
+                        '/etc/zbkc/zbkc.client.rest{id}.keyring'.format(id=id_),
                     ]
                 )
     with contextutil.nested(

@@ -7,7 +7,7 @@ roles:
   - osd.2
 - - client.0
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
     - failed to encode map
     fs: xfs

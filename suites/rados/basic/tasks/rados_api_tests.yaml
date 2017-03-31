@@ -1,11 +1,11 @@
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
     - reached quota
     - wrongly marked me down
 tasks:
 - install:
-- ceph:
+- zbkc:
 - workunit:
     clients:
       client.0:

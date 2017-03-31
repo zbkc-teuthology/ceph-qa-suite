@@ -2,7 +2,7 @@ overrides:
   thrashosds:
     bdev_inject_crash: 2
     bdev_inject_crash_probability: .5
-  ceph:
+  zbkc:
     conf:
       osd:
         osd objectstore: bluestore

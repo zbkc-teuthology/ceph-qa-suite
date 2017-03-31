@@ -1,0 +1,18 @@
+overrides:
+  zbkc:
+    conf:
+      client:
+        debug ms: 1
+        debug client: 20
+      mds:
+        debug ms: 1
+        debug mds: 20
+tasks:
+- install:
+- zbkc:
+    fs: btrfs
+- zbkc-fuse:
+- workunit:
+    clients:
+      client.0:
+        - libzbkcfs/test.sh

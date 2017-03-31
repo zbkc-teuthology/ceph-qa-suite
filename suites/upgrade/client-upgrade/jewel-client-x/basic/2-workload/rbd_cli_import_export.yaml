@@ -1,8 +1,8 @@
 tasks:
 - sequential:
   - upgrade_workload
-- ceph: 
-- print: "**** done ceph"
+- zbkc: 
+- print: "**** done zbkc"
 - workunit:
     branch: jewel
     clients:

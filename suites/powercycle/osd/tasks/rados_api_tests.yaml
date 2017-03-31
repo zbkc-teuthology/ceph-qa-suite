@@ -1,9 +1,9 @@
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
       - reached quota
 tasks:
-- ceph-fuse:
+- zbkc-fuse:
 - workunit:
     clients:
       client.0:

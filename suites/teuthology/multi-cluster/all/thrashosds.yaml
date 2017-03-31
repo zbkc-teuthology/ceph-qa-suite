@@ -11,7 +11,7 @@ roles:
   - backup.client.0
 tasks:
 - install:
-- ceph:
+- zbkc:
     cluster: backup
 - thrashosds:
     cluster: backup

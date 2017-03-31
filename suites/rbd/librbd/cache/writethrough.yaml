@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
     conf:
       client:
         rbd cache: true

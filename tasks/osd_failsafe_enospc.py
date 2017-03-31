@@ -21,7 +21,7 @@ def task(ctx, config):
         tasks:
             - chef:
             - install:
-            - ceph:
+            - zbkc:
                 log-whitelist: ['OSD near full', 'OSD full dropping all updates']
             - osd_failsafe_enospc:
 
@@ -38,7 +38,7 @@ def task(ctx, config):
     dummyfile = '/etc/fstab'
     dummyfile2 = '/etc/resolv.conf'
 
-    manager = ctx.managers['ceph']
+    manager = ctx.managers['zbkc']
 
     # create 1 pg pool with 1 rep which can only be on osd.0
     osds = manager.get_osd_dump()
@@ -61,7 +61,7 @@ def task(ctx, config):
                  'sudo',
                  'daemon-helper',
                  'kill',
-                 'ceph', '-w'
+                 'zbkc', '-w'
              ],
              stdin=run.PIPE,
              stdout=StringIO(),
@@ -71,7 +71,7 @@ def task(ctx, config):
     manager.raw_cluster_cmd('tell', 'osd.0', 'injectargs', '--osd_failsafe_nearfull_ratio .00001')
 
     time.sleep(sleep_time)
-    proc.stdin.close() # causes daemon-helper send SIGKILL to ceph -w
+    proc.stdin.close() # causes daemon-helper send SIGKILL to zbkc -w
     proc.wait()
 
     lines = proc.stdout.getvalue().split('\n')
@@ -89,7 +89,7 @@ def task(ctx, config):
                  'sudo',
                  'daemon-helper',
                  'kill',
-                 'ceph', '-w'
+                 'zbkc', '-w'
              ],
              stdin=run.PIPE,
              stdout=StringIO(),
@@ -99,7 +99,7 @@ def task(ctx, config):
     manager.raw_cluster_cmd('tell', 'osd.0', 'injectargs', '--osd_failsafe_full_ratio .00001')
 
     time.sleep(sleep_time)
-    proc.stdin.close() # causes daemon-helper send SIGKILL to ceph -w
+    proc.stdin.close() # causes daemon-helper send SIGKILL to zbkc -w
     proc.wait()
 
     lines = proc.stdout.getvalue().split('\n')
@@ -131,7 +131,7 @@ def task(ctx, config):
                  'sudo',
                  'daemon-helper',
                  'kill',
-                 'ceph', '-w'
+                 'zbkc', '-w'
              ],
              stdin=run.PIPE,
              stdout=StringIO(),
@@ -139,7 +139,7 @@ def task(ctx, config):
         )
 
     time.sleep(sleep_time)
-    proc.stdin.close() # causes daemon-helper send SIGKILL to ceph -w
+    proc.stdin.close() # causes daemon-helper send SIGKILL to zbkc -w
     proc.wait()
 
     lines = proc.stdout.getvalue().split('\n')
@@ -160,7 +160,7 @@ def task(ctx, config):
                  'sudo',
                  'daemon-helper',
                  'kill',
-                 'ceph', '-w'
+                 'zbkc', '-w'
              ],
              stdin=run.PIPE,
              stdout=StringIO(),
@@ -170,7 +170,7 @@ def task(ctx, config):
     manager.raw_cluster_cmd('tell', 'osd.0', 'injectargs', '--osd_failsafe_full_ratio .00001')
 
     time.sleep(sleep_time)
-    proc.stdin.close() # causes daemon-helper send SIGKILL to ceph -w
+    proc.stdin.close() # causes daemon-helper send SIGKILL to zbkc -w
     proc.wait()
 
     lines = proc.stdout.getvalue().split('\n')
@@ -191,7 +191,7 @@ def task(ctx, config):
                  'sudo',
                  'daemon-helper',
                  'kill',
-                 'ceph', '-w'
+                 'zbkc', '-w'
              ],
              stdin=run.PIPE,
              stdout=StringIO(),
@@ -199,7 +199,7 @@ def task(ctx, config):
         )
 
     time.sleep(sleep_time)
-    proc.stdin.close() # causes daemon-helper send SIGKILL to ceph -w
+    proc.stdin.close() # causes daemon-helper send SIGKILL to zbkc -w
     proc.wait()
 
     lines = proc.stdout.getvalue().split('\n')

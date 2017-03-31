@@ -1,0 +1,6 @@
+tasks:
+- install:
+- zbkc:
+- exec:
+    client.0:
+      - sudo zbkc mds set inline_data true --yes-i-really-mean-it

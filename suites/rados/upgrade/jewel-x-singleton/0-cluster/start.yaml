@@ -1,10 +1,10 @@
 meta:
 - desc: |
-   Run ceph on two nodes,
+   Run zbkc on two nodes,
    with a separate client-only node. 
    Use xfs beneath the osds.
 overrides:
-  ceph:
+  zbkc:
     conf:
       mon:
         mon warn on legacy crush tunables: false

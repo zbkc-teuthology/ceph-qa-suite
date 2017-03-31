@@ -3,7 +3,7 @@ Lost_unfound
 """
 from teuthology.orchestra import run
 import logging
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 from util.rados import rados
 import time
@@ -23,10 +23,10 @@ def task(ctx, config):
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
 
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
 
     manager.wait_for_clean()
@@ -104,7 +104,7 @@ def task(ctx, config):
             args=[
                 "/bin/sh", "-c",
                 " ".join(['adjust-ulimits',
-                          'ceph-coverage',
+                          'zbkc-coverage',
                           '{tdir}/archive/coverage',
                           'rados',
                           '--no-log-to-stderr',

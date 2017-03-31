@@ -10,7 +10,7 @@ import logging
 import random
 import time
 
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 
 log = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ def task(ctx, config):
     example:
 
     tasks:
-    - ceph:
+    - zbkc:
     - recovery_bench:
         duration: 60
         num_objects: 500
@@ -50,10 +50,10 @@ def task(ctx, config):
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
 
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
 
     num_osds = teuthology.num_instances_of_type(ctx.cluster, 'osd')
@@ -75,10 +75,10 @@ class RecoveryBencher:
     RecoveryBencher
     """
     def __init__(self, manager, config):
-        self.ceph_manager = manager
-        self.ceph_manager.wait_for_clean()
+        self.zbkc_manager = manager
+        self.zbkc_manager.wait_for_clean()
 
-        osd_status = self.ceph_manager.get_osd_status()
+        osd_status = self.zbkc_manager.get_osd_status()
         self.osds = osd_status['up']
 
         self.config = config
@@ -113,15 +113,15 @@ class RecoveryBencher:
         io_size = self.config.get("io_size", 4096)
 
         osd = str(random.choice(self.osds))
-        (osd_remote,) = self.ceph_manager.ctx.cluster.only('osd.%s' % osd).remotes.iterkeys()
+        (osd_remote,) = self.zbkc_manager.ctx.cluster.only('osd.%s' % osd).remotes.iterkeys()
 
-        testdir = teuthology.get_testdir(self.ceph_manager.ctx)
+        testdir = teuthology.get_testdir(self.zbkc_manager.ctx)
 
         # create the objects
         osd_remote.run(
             args=[
                 'adjust-ulimits',
-                'ceph-coverage',
+                'zbkc-coverage',
                 '{tdir}/archive/coverage'.format(tdir=testdir),
                 'smalliobench'.format(tdir=testdir),
                 '--use-prefix', 'recovery_bench',
@@ -137,7 +137,7 @@ class RecoveryBencher:
         p = osd_remote.run(
             args=[
                 'adjust-ulimits',
-                'ceph-coverage',
+                'zbkc-coverage',
                 '{tdir}/archive/coverage'.format(tdir=testdir),
                 'smalliobench',
                 '--use-prefix', 'recovery_bench',
@@ -151,7 +151,7 @@ class RecoveryBencher:
         )
         self.process_samples(p.stderr.getvalue())
 
-        self.ceph_manager.raw_cluster_cmd('osd', 'out', osd)
+        self.zbkc_manager.raw_cluster_cmd('osd', 'out', osd)
         time.sleep(5)
 
         # recovery bench
@@ -159,7 +159,7 @@ class RecoveryBencher:
         p = osd_remote.run(
             args=[
                 'adjust-ulimits',
-                'ceph-coverage',
+                'zbkc-coverage',
                 '{tdir}/archive/coverage'.format(tdir=testdir),
                 'smalliobench',
                 '--use-prefix', 'recovery_bench',
@@ -173,7 +173,7 @@ class RecoveryBencher:
         )
         self.process_samples(p.stderr.getvalue())
 
-        self.ceph_manager.raw_cluster_cmd('osd', 'in', osd)
+        self.zbkc_manager.raw_cluster_cmd('osd', 'in', osd)
 
     def process_samples(self, input):
         """

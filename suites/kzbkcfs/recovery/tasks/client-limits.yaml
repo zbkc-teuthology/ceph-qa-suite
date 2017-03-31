@@ -1,0 +1,12 @@
+
+overrides:
+  zbkc:
+    log-whitelist:
+      - responding to mclientcaps\(revoke\)
+      - not advance its oldest_client_tid
+
+tasks:
+  - zbkcfs_test_runner:
+      fail_on_skip: false
+      modules:
+        - tasks.zbkcfs.test_client_limits

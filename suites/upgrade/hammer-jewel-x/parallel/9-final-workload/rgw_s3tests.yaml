@@ -5,7 +5,7 @@ tasks:
       rgw_server: client.1
 - print: "**** done rgw_server from 7-final-workload"
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         rgw lc debug interval: 10

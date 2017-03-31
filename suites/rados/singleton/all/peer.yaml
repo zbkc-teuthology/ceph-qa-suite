@@ -11,7 +11,7 @@ openstack:
       size: 10 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
     config:
       global:
         osd pool default min size : 1

@@ -9,7 +9,7 @@ def rados(ctx, remote, cmd, wait=True, check_status=False):
     log.info("rados %s" % ' '.join(cmd))
     pre = [
         'adjust-ulimits',
-        'ceph-coverage',
+        'zbkc-coverage',
         '{tdir}/archive/coverage'.format(tdir=testdir),
         'rados',
         ];
@@ -25,24 +25,24 @@ def rados(ctx, remote, cmd, wait=True, check_status=False):
         return proc
 
 def create_ec_pool(remote, name, profile_name, pgnum, profile={}):
-    remote.run(args=['sudo', 'ceph'] +
+    remote.run(args=['sudo', 'zbkc'] +
                cmd_erasure_code_profile(profile_name, profile))
     remote.run(args=[
-        'sudo', 'ceph', 'osd', 'pool', 'create', name,
+        'sudo', 'zbkc', 'osd', 'pool', 'create', name,
         str(pgnum), str(pgnum), 'erasure', profile_name,
         ])
 
 def create_replicated_pool(remote, name, pgnum):
     remote.run(args=[
-        'sudo', 'ceph', 'osd', 'pool', 'create', name, str(pgnum), str(pgnum),
+        'sudo', 'zbkc', 'osd', 'pool', 'create', name, str(pgnum), str(pgnum),
         ])
 
 def create_cache_pool(remote, base_name, cache_name, pgnum, size):
     remote.run(args=[
-        'sudo', 'ceph', 'osd', 'pool', 'create', cache_name, str(pgnum)
+        'sudo', 'zbkc', 'osd', 'pool', 'create', cache_name, str(pgnum)
     ])
     remote.run(args=[
-        'sudo', 'ceph', 'osd', 'tier', 'add-cache', base_name, cache_name,
+        'sudo', 'zbkc', 'osd', 'tier', 'add-cache', base_name, cache_name,
         str(size),
     ])
 

@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 def task(ctx, config):
     """
     Run locktests, from the xfstests suite, on the given
-    clients. Whether the clients are ceph-fuse or kernel does not
+    clients. Whether the clients are zbkc-fuse or kernel does not
     matter, and the two clients can refer to the same mount.
 
     The config is a list of two clients to run the locktest on. The
@@ -19,8 +19,8 @@ def task(ctx, config):
 
     For example:
        tasks:
-       - ceph:
-       - ceph-fuse: [client.0, client.1]
+       - zbkc:
+       - zbkc-fuse: [client.0, client.1]
        - locktest:
            [client.0, client.1]
 
@@ -53,7 +53,7 @@ def task(ctx, config):
                     run.Raw('&&'),
                     'wget',
                     '-nv',
-                    'https://raw.github.com/gregsfortytwo/xfstests-ceph/master/src/locktest.c',
+                    'https://raw.github.com/gregsfortytwo/xfstests-zbkc/master/src/locktest.c',
                     '-O', '{tdir}/locktest/locktest.c'.format(tdir=testdir),
                     run.Raw('&&'),
                     'g++', '{tdir}/locktest/locktest.c'.format(tdir=testdir),

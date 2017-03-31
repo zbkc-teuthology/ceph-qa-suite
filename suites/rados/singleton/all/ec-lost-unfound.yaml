@@ -12,7 +12,7 @@ openstack:
       size: 10 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
     log-whitelist:
     - objects unfound and apparently lost
 - ec_lost_unfound:

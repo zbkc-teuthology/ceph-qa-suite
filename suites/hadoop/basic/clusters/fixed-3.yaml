@@ -3,7 +3,7 @@ os_type: ubuntu
 os_version: "14.04"
 
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         client permissions: false

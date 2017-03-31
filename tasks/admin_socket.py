@@ -24,7 +24,7 @@ def task(ctx, config):
     To run the same test on all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rados:
         - admin_socket:
             all:
@@ -34,7 +34,7 @@ def task(ctx, config):
     To restrict it to certain clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rados: [client.1]
         - admin_socket:
             client.1:
@@ -45,7 +45,7 @@ def task(ctx, config):
     a list::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rados: [client.0]
         - admin_socket:
             client.0:
@@ -55,7 +55,7 @@ def task(ctx, config):
                 test: http://example.com/test_help_version
                 args: [version]
 
-    Note that there must be a ceph client with an admin socket running
+    Note that there must be a zbkc client with an admin socket running
     before this task is run. The tests are parallelized at the client
     level. Tests for a single client are run serially.
 
@@ -91,9 +91,9 @@ def _socket_command(ctx, remote, socket_path, command, args):
             args=[
                 'sudo',
                 'adjust-ulimits',
-                'ceph-coverage',
+                'zbkc-coverage',
                 '{tdir}/archive/coverage'.format(tdir=testdir),
-                'ceph',
+                'zbkc',
                 '--admin-daemon', socket_path,
                 ] + command.split(' ') + args,
             stdout=json_fp,
@@ -103,7 +103,7 @@ def _socket_command(ctx, remote, socket_path, command, args):
             break
         assert max_tries > 0
         max_tries -= 1
-        log.info('ceph cli returned an error, command not registered yet?')
+        log.info('zbkc cli returned an error, command not registered yet?')
         log.info('sleeping and retrying ...')
         time.sleep(1)
     out = json_fp.getvalue()
@@ -124,7 +124,7 @@ def _run_tests(ctx, client, tests):
     testdir = teuthology.get_testdir(ctx)
     log.debug('Running admin socket tests on %s', client)
     (remote,) = ctx.cluster.only(client).remotes.iterkeys()
-    socket_path = '/var/run/ceph/ceph-{name}.asok'.format(name=client)
+    socket_path = '/var/run/zbkc/zbkc-{name}.asok'.format(name=client)
     overrides = ctx.config.get('overrides', {}).get('admin_socket', {})
 
     try:

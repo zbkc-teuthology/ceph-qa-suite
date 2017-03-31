@@ -1,4 +1,4 @@
-ceph-qa-suite
+zbkc-qa-suite
 -------------
 
 clusters/    - some predefined cluster layouts
@@ -49,4 +49,4 @@ item), so this is really 2x2 = 4 tests, which are
 
 Symlinks are okay.
 
-The teuthology code can be found in https://github.com/ceph/teuthology.git
+The teuthology code can be found in https://github.com/zbkc/teuthology.git

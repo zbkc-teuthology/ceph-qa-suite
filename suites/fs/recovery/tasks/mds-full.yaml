@@ -1,6 +1,6 @@
 
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
       - OSD full dropping all updates
       - OSD near full
@@ -20,6 +20,6 @@ overrides:
         debug objectcacher: 20
 
 tasks:
-  - cephfs_test_runner:
+  - zbkcfs_test_runner:
       modules:
-        - tasks.cephfs.test_full
+        - tasks.zbkcfs.test_full

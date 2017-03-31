@@ -1,5 +1,5 @@
 """ 
-Run an autotest test on the ceph cluster.
+Run an autotest test on the zbkc cluster.
 """
 import json
 import logging
@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 def task(ctx, config):
     """
-    Run an autotest test on the ceph cluster.
+    Run an autotest test on the zbkc cluster.
 
     Only autotest client tests are supported.
 
@@ -23,8 +23,8 @@ def task(ctx, config):
     For example::
 
         tasks:
-        - ceph:
-        - ceph-fuse: [client.0, client.1]
+        - zbkc:
+        - zbkc-fuse: [client.0, client.1]
         - autotest:
             client.0: [dbench]
             client.1: [bonnie]
@@ -32,8 +32,8 @@ def task(ctx, config):
     You can also specify a list of tests to run on all clients::
 
         tasks:
-        - ceph:
-        - ceph-fuse:
+        - zbkc:
+        - zbkc-fuse:
         - autotest:
             all: [dbench]
     """
@@ -87,7 +87,7 @@ def _download(testdir, remote):
             'wget',
             '-nv',
             '--no-check-certificate',
-            'https://github.com/ceph/autotest/tarball/ceph',
+            'https://github.com/zbkc/autotest/tarball/zbkc',
             '-O-',
             run.Raw('|'),
             'tar',

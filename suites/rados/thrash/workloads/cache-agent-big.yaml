@@ -1,21 +1,21 @@
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
       - must scrub before tier agent can activate
 tasks:
 - exec:
     client.0:
-      - sudo ceph osd erasure-code-profile set teuthologyprofile ruleset-failure-domain=osd m=1 k=2
-      - sudo ceph osd pool create base 4 4 erasure teuthologyprofile
-      - sudo ceph osd pool set base min_size 2
-      - sudo ceph osd pool create cache 4
-      - sudo ceph osd tier add base cache
-      - sudo ceph osd tier cache-mode cache writeback
-      - sudo ceph osd tier set-overlay base cache
-      - sudo ceph osd pool set cache hit_set_type bloom
-      - sudo ceph osd pool set cache hit_set_count 8
-      - sudo ceph osd pool set cache hit_set_period 60
-      - sudo ceph osd pool set cache target_max_objects 5000
+      - sudo zbkc osd erasure-code-profile set teuthologyprofile ruleset-failure-domain=osd m=1 k=2
+      - sudo zbkc osd pool create base 4 4 erasure teuthologyprofile
+      - sudo zbkc osd pool set base min_size 2
+      - sudo zbkc osd pool create cache 4
+      - sudo zbkc osd tier add base cache
+      - sudo zbkc osd tier cache-mode cache writeback
+      - sudo zbkc osd tier set-overlay base cache
+      - sudo zbkc osd pool set cache hit_set_type bloom
+      - sudo zbkc osd pool set cache hit_set_count 8
+      - sudo zbkc osd pool set cache hit_set_period 60
+      - sudo zbkc osd pool set cache target_max_objects 5000
 - rados:
     clients: [client.0]
     pools: [base]

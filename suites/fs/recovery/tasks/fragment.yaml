@@ -1,5 +1,5 @@
 
 tasks:
-  - cephfs_test_runner:
+  - zbkcfs_test_runner:
       modules:
-        - tasks.cephfs.test_fragment
+        - tasks.zbkcfs.test_fragment

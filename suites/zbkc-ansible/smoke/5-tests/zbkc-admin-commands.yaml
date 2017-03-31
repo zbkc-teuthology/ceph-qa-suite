@@ -1,0 +1,7 @@
+meta:
+- desc: "Run zbkc-admin-commands.sh"
+tasks:
+- workunit:
+    clients:
+      client.0:
+        - zbkc-tests/zbkc-admin-commands.sh

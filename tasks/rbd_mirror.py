@@ -29,9 +29,9 @@ class RBDMirror(Task):
         - [secondary.mon.a, secondary.osd.0, secondary.osd.1, secondary.osd.2]
         - [primary.client.mirror, secondary.client.mirror]
         tasks:
-        - ceph:
+        - zbkc:
             cluster: primary
-        - ceph:
+        - zbkc:
             cluster: secondary
         - rbd-mirror:
             client: primary.client.mirror
@@ -44,7 +44,7 @@ class RBDMirror(Task):
 
     Possible options for this task are:
 
-        client: role - ceph client to connect as
+        client: role - zbkc client to connect as
         valgrind: [--tool=<valgrind tool>] - none by default
         coverage: bool - whether this run may be collecting coverage data
     """
@@ -76,7 +76,7 @@ class RBDMirror(Task):
 
         args = [
             'adjust-ulimits',
-            'ceph-coverage',
+            'zbkc-coverage',
             '{tdir}/archive/coverage'.format(tdir=testdir),
             'daemon-helper',
             daemon_signal,

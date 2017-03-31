@@ -222,7 +222,7 @@ def ship_apache_configs(ctx, config, role_endpoints, on_client = None,
                 client=client),
             data="""#!/bin/sh
 ulimit -c unlimited
-exec radosgw -f -n {client} -k /etc/ceph/ceph.{client}.keyring {rgw_options}
+exec radosgw -f -n {client} -k /etc/zbkc/zbkc.{client}.keyring {rgw_options}
 
 """.format(tdir=testdir, client=client, rgw_options=" ".join(rgw_options))
             )
@@ -281,7 +281,7 @@ def start_rgw(ctx, config, on_client = None, except_client = None):
         cmd_prefix = [
             'sudo',
             'adjust-ulimits',
-            'ceph-coverage',
+            'zbkc-coverage',
             '{tdir}/archive/coverage'.format(tdir=testdir),
             'daemon-helper',
             'term',
@@ -321,9 +321,9 @@ def start_rgw(ctx, config, on_client = None, except_client = None):
 
         rgw_cmd.extend([
             '-n', client,
-            '-k', '/etc/ceph/ceph.{client}.keyring'.format(client=client),
+            '-k', '/etc/zbkc/zbkc.{client}.keyring'.format(client=client),
             '--log-file',
-            '/var/log/ceph/rgw.{client}.log'.format(client=client),
+            '/var/log/zbkc/rgw.{client}.log'.format(client=client),
             '--rgw_ops_log_socket_path',
             '{tdir}/rgw.opslog.{client}.sock'.format(tdir=testdir,
                                                      client=client),
@@ -331,7 +331,7 @@ def start_rgw(ctx, config, on_client = None, except_client = None):
             run.Raw('|'),
             'sudo',
             'tee',
-            '/var/log/ceph/rgw.{client}.stdout'.format(tdir=testdir,
+            '/var/log/zbkc/rgw.{client}.stdout'.format(tdir=testdir,
                                                        client=client),
             run.Raw('2>&1'),
             ])
@@ -465,15 +465,15 @@ def extract_zone_info(ctx, client, client_config):
     :param client_config: dictionary of client configuration information
     :returns: zone extracted from client and client_config information
     """
-    ceph_config = ctx.ceph['ceph'].conf.get('global', {})
-    ceph_config.update(ctx.ceph['ceph'].conf.get('client', {}))
-    ceph_config.update(ctx.ceph['ceph'].conf.get(client, {}))
+    zbkc_config = ctx.zbkc['zbkc'].conf.get('global', {})
+    zbkc_config.update(ctx.zbkc['zbkc'].conf.get('client', {}))
+    zbkc_config.update(ctx.zbkc['zbkc'].conf.get(client, {}))
     for key in ['rgw zone', 'rgw region', 'rgw zone root pool']:
-        assert key in ceph_config, \
-            'ceph conf must contain {key} for {client}'.format(key=key,
+        assert key in zbkc_config, \
+            'zbkc conf must contain {key} for {client}'.format(key=key,
                                                                client=client)
-    region = ceph_config['rgw region']
-    zone = ceph_config['rgw zone']
+    region = zbkc_config['rgw region']
+    zone = zbkc_config['rgw zone']
     zone_info = dict()
     for key in ['rgw control pool', 'rgw gc pool', 'rgw log pool',
                 'rgw intent log pool', 'rgw usage log pool',
@@ -483,9 +483,9 @@ def extract_zone_info(ctx, client, client_config):
         new_key = key.split(' ', 1)[1]
         new_key = new_key.replace(' ', '_')
 
-        if key in ceph_config:
-            value = ceph_config[key]
-            log.debug('{key} specified in ceph_config ({val})'.format(
+        if key in zbkc_config:
+            value = zbkc_config[key]
+            log.debug('{key} specified in zbkc_config ({val})'.format(
                 key=key, val=value))
             zone_info[new_key] = value
         else:
@@ -494,7 +494,7 @@ def extract_zone_info(ctx, client, client_config):
     index_pool = '.' + region + '.' + zone + '.' + 'index_pool'
     data_pool = '.' + region + '.' + zone + '.' + 'data_pool'
     data_extra_pool = '.' + region + '.' + zone + '.' + 'data_extra_pool'
-    compression_type = ceph_config.get('rgw compression type', '')
+    compression_type = zbkc_config.get('rgw compression type', '')
 
     zone_info['placement_pools'] = [{'key': 'default_placement',
                                      'val': {'index_pool': index_pool,
@@ -507,15 +507,15 @@ def extract_zone_info(ctx, client, client_config):
     # insert them into zone_info with a different format and then remove them
     # in the fill_in_endpoints() method
     for key in ['rgw log meta', 'rgw log data']:
-        if key in ceph_config:
-            zone_info[key] = ceph_config[key]
+        if key in zbkc_config:
+            zone_info[key] = zbkc_config[key]
 
     # these keys are meant for the zones argument in the region info.  We
     # insert them into zone_info with a different format and then remove them
     # in the fill_in_endpoints() method
     for key in ['rgw log meta', 'rgw log data']:
-        if key in ceph_config:
-            zone_info[key] = ceph_config[key]
+        if key in zbkc_config:
+            zone_info[key] = zbkc_config[key]
 
     return region, zone, zone_info
 
@@ -794,7 +794,7 @@ def configure_multisite_regions_and_zones(ctx, config, regions, role_endpoints, 
     for role, (zonegroup, zone, zone_info, user_info) in role_zones.iteritems():
         (remote,) = ctx.cluster.only(role).remotes.keys()
         for pool_info in zone_info['placement_pools']:
-            remote.run(args=['sudo', 'ceph', 'osd', 'pool', 'create',
+            remote.run(args=['sudo', 'zbkc', 'osd', 'pool', 'create',
                              pool_info['val']['index_pool'], '64', '64'])
             if ctx.rgw.ec_data_pool:
                 create_ec_pool(remote, pool_info['val']['data_pool'],
@@ -822,15 +822,15 @@ def configure_multisite_regions_and_zones(ctx, config, regions, role_endpoints, 
     yield
 
 def configure_compression_in_default_zone(ctx, config):
-    ceph_config = ctx.ceph['ceph'].conf.get('global', {})
-    ceph_config.update(ctx.ceph['ceph'].conf.get('client', {}))
+    zbkc_config = ctx.zbkc['zbkc'].conf.get('global', {})
+    zbkc_config.update(ctx.zbkc['zbkc'].conf.get('client', {}))
     for client, c_config in config.iteritems():
-        ceph_config.update(ctx.ceph['ceph'].conf.get(client, {}))
+        zbkc_config.update(ctx.zbkc['zbkc'].conf.get(client, {}))
         key = 'rgw compression type'
-        if not key in ceph_config:
+        if not key in zbkc_config:
             log.debug('No compression setting to enable')
             break
-        compression = ceph_config[key]
+        compression = zbkc_config[key]
         log.debug('Configuring compression type = %s', compression)
 
         # XXX: the 'default' zone and zonegroup aren't created until we run RGWRados::init_complete().
@@ -938,7 +938,7 @@ def configure_regions_and_zones(ctx, config, regions, role_endpoints, realm):
 
             (remote,) = ctx.cluster.only(role).remotes.keys()
             for pool_info in zone_info['placement_pools']:
-                remote.run(args=['sudo', 'ceph', 'osd', 'pool', 'create',
+                remote.run(args=['sudo', 'zbkc', 'osd', 'pool', 'create',
                                  pool_info['val']['index_pool'], '64', '64'])
                 if ctx.rgw.ec_data_pool:
                     create_ec_pool(remote, pool_info['val']['data_pool'],
@@ -1068,19 +1068,19 @@ def task(ctx, config):
     For example, to run rgw on all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw:
 
     To only run on certain clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.0, client.3]
 
     or
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw:
             client.0:
             client.3:
@@ -1088,7 +1088,7 @@ def task(ctx, config):
     You can adjust the idle timeout for fastcgi (default is 30 seconds):
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw:
             client.0:
               idle_timeout: 90
@@ -1096,7 +1096,7 @@ def task(ctx, config):
     To run radosgw through valgrind:
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw:
             client.0:
               valgrind: [--tool=memcheck]
@@ -1106,7 +1106,7 @@ def task(ctx, config):
     To use civetweb instead of apache:
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw:
           - client.0
         overrides:
@@ -1114,10 +1114,10 @@ def task(ctx, config):
             frontend: civetweb
 
     Note that without a modified fastcgi module e.g. with the default
-    one on CentOS, you must have rgw print continue = false in ceph.conf::
+    one on CentOS, you must have rgw print continue = false in zbkc.conf::
 
         tasks:
-        - ceph:
+        - zbkc:
             conf:
               global:
                 rgw print continue: false
@@ -1132,11 +1132,11 @@ def task(ctx, config):
     To run rgws for multiple regions or zones, describe the regions
     and their zones in a regions section. The endpoints will be
     generated by this task. Each client must have a region, zone,
-    and pools assigned in ceph.conf::
+    and pools assigned in zbkc.conf::
 
         tasks:
         - install:
-        - ceph:
+        - zbkc:
             conf:
               client.0:
                 rgw region: foo

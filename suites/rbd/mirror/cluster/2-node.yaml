@@ -1,5 +1,5 @@
 meta:
-- desc: 2 ceph clusters with 3 mons and 3 osds each
+- desc: 2 zbkc clusters with 3 mons and 3 osds each
 roles:
 - - cluster1.mon.a
   - cluster1.mon.b

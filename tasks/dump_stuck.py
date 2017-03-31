@@ -5,7 +5,7 @@ import logging
 import re
 import time
 
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 
 
@@ -17,7 +17,7 @@ def check_stuck(manager, num_inactive, num_unclean, num_stale, timeout=10):
     extract health information from the raw_cluster_cmd and compare the results with
     values passed in.  This passes if all asserts pass.
  
-    :param num_manager: Ceph manager
+    :param num_manager: Zbkc manager
     :param num_inactive: number of inaactive pages that are stuck
     :param num_unclean: number of unclean pages that are stuck
     :paran num_stale: number of stale pages that are stuck
@@ -37,7 +37,7 @@ def check_stuck(manager, num_inactive, num_unclean, num_stale, timeout=10):
 
     # check health output as well
     health = manager.raw_cluster_cmd('health')
-    log.debug('ceph health is: %s', health)
+    log.debug('zbkc health is: %s', health)
     if num_inactive > 0:
         m = re.search('(\d+) pgs stuck inactive', health)
         assert int(m.group(1)) == num_inactive
@@ -64,10 +64,10 @@ def task(ctx, config):
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
 
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
 
     manager.raw_cluster_cmd('tell', 'osd.0', 'flush_pg_stats')

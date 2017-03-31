@@ -3,7 +3,7 @@ Thrash mds by simulating failures
 """
 import logging
 import contextlib
-import ceph_manager
+import zbkc_manager
 import random
 import time
 
@@ -11,7 +11,7 @@ from gevent.greenlet import Greenlet
 from gevent.event import Event
 from teuthology import misc as teuthology
 
-from tasks.cephfs.filesystem import MDSCluster, Filesystem
+from tasks.zbkcfs.filesystem import MDSCluster, Filesystem
 
 log = logging.getLogger(__name__)
 
@@ -70,13 +70,13 @@ class MDSThrasher(Greenlet):
       Thrash weights do not have to sum to 1.
 
       tasks:
-      - ceph:
+      - zbkc:
       - mds_thrash:
           thrash_weights:
             - mds.a: 0.8
             - mds.b: 0.2
           thrash_in_replay: 0.4
-      - ceph-fuse:
+      - zbkc-fuse:
       - workunit:
           clients:
             all: [suites/fsx.sh]
@@ -84,7 +84,7 @@ class MDSThrasher(Greenlet):
       The following example disables randomization, and uses the max delay values:
 
       tasks:
-      - ceph:
+      - zbkc:
       - mds_thrash:
           max_thrash_delay: 10
           max_revive_delay: 1
@@ -368,8 +368,8 @@ def task(ctx, config):
     random.seed(seed)
 
     (first,) = ctx.cluster.only('mds.{_id}'.format(_id=mdslist[0])).remotes.iterkeys()
-    manager = ceph_manager.CephManager(
-        first, ctx=ctx, logger=log.getChild('ceph_manager'),
+    manager = zbkc_manager.ZbkcManager(
+        first, ctx=ctx, logger=log.getChild('zbkc_manager'),
     )
 
     # make sure everyone is in active, standby, or standby-replay

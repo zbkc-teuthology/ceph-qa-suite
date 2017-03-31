@@ -6,7 +6,7 @@ import logging
 import time
 from teuthology.orchestra import run
 
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 
 log = logging.getLogger(__name__)
@@ -25,10 +25,10 @@ def task(ctx, config):
     num_osds = teuthology.num_instances_of_type(ctx.cluster, 'osd')
     log.info('num_osds is %s' % num_osds)
 
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
 
     while len(manager.get_osd_status()['up']) < num_osds:
@@ -50,7 +50,7 @@ def task(ctx, config):
                 log.info("osd %d has an error" % i)
                 raise Exception("osd %d error" % i)
 
-            log_path = '/var/log/ceph/osd.%d.log' % (i)
+            log_path = '/var/log/zbkc/osd.%d.log' % (i)
 
             p = osd_remote.run(
                 args = [

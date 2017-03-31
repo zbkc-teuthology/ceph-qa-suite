@@ -1,9 +1,9 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
 - exec:
    client.0:
-   - ceph_test_rados_striper_api_io
-   - ceph_test_rados_striper_api_aio
-   - ceph_test_rados_striper_api_striping
+   - zbkc_test_rados_striper_api_io
+   - zbkc_test_rados_striper_api_aio
+   - zbkc_test_rados_striper_api_striping
 

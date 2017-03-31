@@ -3,7 +3,7 @@ tasks:
     clients: [client.0]
     ops: 6000
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         rbd cache: true

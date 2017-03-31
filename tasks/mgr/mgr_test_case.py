@@ -3,13 +3,13 @@ from unittest import case
 import json
 
 from teuthology import misc
-from tasks.ceph_test_case import CephTestCase
+from tasks.zbkc_test_case import ZbkcTestCase
 
-# TODO move definition of CephCluster
-from tasks.cephfs.filesystem import CephCluster
+# TODO move definition of ZbkcCluster
+from tasks.zbkcfs.filesystem import ZbkcCluster
 
 
-class MgrCluster(CephCluster):
+class MgrCluster(ZbkcCluster):
     def __init__(self, ctx):
         super(MgrCluster, self).__init__(ctx)
         self.mgr_ids = list(misc.all_roles_of_type(ctx.cluster, 'mgr'))
@@ -44,7 +44,7 @@ class MgrCluster(CephCluster):
         return [s['name'] for s in self.get_mgr_map()["standbys"]]
 
 
-class MgrTestCase(CephTestCase):
+class MgrTestCase(ZbkcTestCase):
     REQUIRE_MGRS = 1
 
     def setUp(self):

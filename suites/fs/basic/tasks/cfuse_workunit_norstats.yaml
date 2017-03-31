@@ -6,7 +6,7 @@ tasks:
         - fs/norstats
 
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         client dirsize rbytes: false

@@ -22,22 +22,22 @@ def task(ctx, config):
     For example::
 
         tasks:
-        - ceph:
+        - zbkc:
         - cram:
             clients:
               client.0:
-              - http://ceph.com/qa/test.t
-              - http://ceph.com/qa/test2.t]
-              client.1: [http://ceph.com/qa/test.t]
+              - http://zbkc.com/qa/test.t
+              - http://zbkc.com/qa/test2.t]
+              client.1: [http://zbkc.com/qa/test.t]
             branch: foo
 
     You can also run a list of cram tests on all clients::
 
         tasks:
-        - ceph:
+        - zbkc:
         - cram:
             clients:
-              all: [http://ceph.com/qa/test.t]
+              all: [http://zbkc.com/qa/test.t]
 
     :param ctx: Context
     :param config: Configuration
@@ -128,16 +128,16 @@ def _run_tests(ctx, role):
     assert role.startswith(PREFIX)
     id_ = role[len(PREFIX):]
     (remote,) = ctx.cluster.only(role).remotes.iterkeys()
-    ceph_ref = ctx.summary.get('ceph-sha1', 'master')
+    zbkc_ref = ctx.summary.get('zbkc-sha1', 'master')
 
     testdir = teuthology.get_testdir(ctx)
     log.info('Running tests for %s...', role)
     remote.run(
         args=[
-            run.Raw('CEPH_REF={ref}'.format(ref=ceph_ref)),
-            run.Raw('CEPH_ID="{id}"'.format(id=id_)),
+            run.Raw('ZBKC_REF={ref}'.format(ref=zbkc_ref)),
+            run.Raw('ZBKC_ID="{id}"'.format(id=id_)),
             'adjust-ulimits',
-            'ceph-coverage',
+            'zbkc-coverage',
             '{tdir}/archive/coverage'.format(tdir=testdir),
             '{tdir}/virtualenv/bin/cram'.format(tdir=testdir),
             '-v', '--',

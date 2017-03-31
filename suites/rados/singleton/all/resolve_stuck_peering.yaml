@@ -4,7 +4,7 @@ roles:
 
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: xfs
 - resolve_stuck_peering:
 

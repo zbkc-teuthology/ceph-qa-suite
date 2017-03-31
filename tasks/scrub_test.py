@@ -8,7 +8,7 @@ import os
 import time
 import tempfile
 
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 
 log = logging.getLogger(__name__)
@@ -33,8 +33,8 @@ def find_victim_object(ctx, pg, osd):
     """Return a file to be fuzzed"""
     (osd_remote,) = ctx.cluster.only('osd.%d' % osd).remotes.iterkeys()
     data_path = os.path.join(
-        '/var/lib/ceph/osd',
-        'ceph-{id}'.format(id=osd),
+        '/var/lib/zbkc/osd',
+        'zbkc-{id}'.format(id=osd),
         'fuse',
         '{pg}_head'.format(pg=pg),
         'all',
@@ -333,7 +333,7 @@ def task(ctx, config):
     tasks:
     - chef:
     - install:
-    - ceph:
+    - zbkc:
         log-whitelist:
         - '!= data_digest'
         - '!= omap_digest'
@@ -363,10 +363,10 @@ def task(ctx, config):
     num_osds = teuthology.num_instances_of_type(ctx.cluster, 'osd')
     log.info('num_osds is %s' % num_osds)
 
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
 
     while len(manager.get_osd_status()['up']) < num_osds:

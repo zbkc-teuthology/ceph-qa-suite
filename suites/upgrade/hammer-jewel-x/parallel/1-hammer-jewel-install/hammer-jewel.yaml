@@ -1,12 +1,12 @@
 tasks:
 - install:
     branch: hammer
-    exclude_packages: ['ceph-mgr','libcephfs2','libcephfs-devel','libcephfs-dev']
+    exclude_packages: ['zbkc-mgr','libzbkcfs2','libzbkcfs-devel','libzbkcfs-dev']
 - print: "**** done hammer"
-- ceph:
+- zbkc:
    fs: xfs
 - install.upgrade:
-    exclude_packages: ['ceph-mgr','libcephfs2','libcephfs-devel','libcephfs-dev']
+    exclude_packages: ['zbkc-mgr','libzbkcfs2','libzbkcfs-devel','libzbkcfs-dev']
     osd.0:
       branch: jewel
     osd.2:

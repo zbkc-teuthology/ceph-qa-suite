@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
 - rbd:
     all:
       fs_type: btrfs

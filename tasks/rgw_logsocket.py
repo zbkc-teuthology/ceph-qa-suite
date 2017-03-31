@@ -97,14 +97,14 @@ def task(ctx, config):
     Must restrict testing to a particular client::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.0]
         - s3tests: [client.0]
 
     To pass extra arguments to nose (e.g. to run a certain test)::
 
         tasks:
-        - ceph:
+        - zbkc:
         - rgw: [client.0]
         - s3tests:
             client.0:

@@ -1,4 +1,4 @@
 tasks:
 - exec:
     osd.0:
-      - ceph osd set require_kraken_osds
+      - zbkc osd set require_kraken_osds

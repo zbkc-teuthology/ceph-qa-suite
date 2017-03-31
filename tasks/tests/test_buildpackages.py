@@ -7,7 +7,7 @@ from teuthology import packaging
 
 def test_get_tag_branch_sha1():
     gitbuilder = packaging.GitbuilderProject(
-        'ceph',
+        'zbkc',
         {
             'os_type': 'centos',
             'os_version': '7.0',
@@ -18,7 +18,7 @@ def test_get_tag_branch_sha1():
     assert sha1 is not None
 
     gitbuilder = packaging.GitbuilderProject(
-        'ceph',
+        'zbkc',
         {
             'os_type': 'centos',
             'os_version': '7.0',
@@ -50,7 +50,7 @@ def test_get_tag_branch_sha1():
             check_output=check_output,
     ):
         gitbuilder = packaging.GitbuilderProject(
-            'ceph',
+            'zbkc',
             {
                 'os_type': 'centos',
                 'os_version': '7.0',
@@ -76,7 +76,7 @@ def test_get_tag_branch_sha1():
             check_output=check_output,
     ):
         gitbuilder = packaging.GitbuilderProject(
-            'ceph',
+            'zbkc',
             {
                 'os_type': 'centos',
                 'os_version': '7.0',
@@ -138,7 +138,7 @@ def test_lookup_configs():
     config = {
         'overrides': {
             'install': {
-                'ceph': {
+                'zbkc': {
                     'sha1': 'overridesha1',
                     'tag': 'overridetag',
                     'branch': 'overridebranch',
@@ -164,7 +164,7 @@ def test_lookup_configs():
     }
     ctx.config = config
     expected_configs = [{'branch': 'overridebranch', 'sha1': 'overridesha1', 'tag': 'overridetag'},
-                        {'project': 'ceph', 'branch': 'overridebranch', 'sha1': 'overridesha1', 'tag': 'overridetag'},
-                        {'project': 'ceph', 'sha1': 'client0sha1'}]
+                        {'project': 'zbkc', 'branch': 'overridebranch', 'sha1': 'overridesha1', 'tag': 'overridetag'},
+                        {'project': 'zbkc', 'sha1': 'client0sha1'}]
 
     assert buildpackages.lookup_configs(ctx, config) == expected_configs

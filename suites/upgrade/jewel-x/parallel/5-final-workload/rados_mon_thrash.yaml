@@ -2,7 +2,7 @@ meta:
 - desc: |
    librados C and C++ api tests
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
       - reached quota
 tasks:

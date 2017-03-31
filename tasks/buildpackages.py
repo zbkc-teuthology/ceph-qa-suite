@@ -1,5 +1,5 @@
 """
-Build ceph packages
+Build zbkc packages
 
 Unit tests:
 
@@ -7,7 +7,7 @@ py.test -v -s tests/test_buildpackages.py
 
 Integration tests:
 
-teuthology-openstack --verbose --key-name myself --key-filename ~/Downloads/myself --ceph infernalis --suite teuthology/buildpackages
+teuthology-openstack --verbose --key-name myself --key-filename ~/Downloads/myself --zbkc infernalis --suite teuthology/buildpackages
 
 """
 import copy
@@ -42,7 +42,7 @@ def apply_overrides(ctx, config):
     assert isinstance(config, dict), \
         "task install only supports a dictionary for configuration"
 
-    project, = config.get('project', 'ceph'),
+    project, = config.get('project', 'zbkc'),
     log.debug('project %s' % project)
     overrides = ctx.config.get('overrides')
     if overrides:
@@ -96,13 +96,13 @@ def lookup_configs(ctx, node):
     return configs
 
 def get_sha1(ref):
-    url = teuth_config.get_ceph_git_url()
+    url = teuth_config.get_zbkc_git_url()
     ls_remote = misc.sh("git ls-remote " + url + " " + ref)
     return ls_remote.split()[0]
 
 def task(ctx, config):
     """
-    Build Ceph packages. This task will automagically be run
+    Build Zbkc packages. This task will automagically be run
     before the task that need to install packages (this is taken
     care of by the internal teuthology task).
 
@@ -173,7 +173,7 @@ def task(ctx, config):
                  " tag = " + tag + "," +
                  " branch = " + branch + "," +
                  " sha1 = " + sha1)
-        target = ('ceph-' +
+        target = ('zbkc-' +
                   pkg_type + '-' +
                   dist + '-' +
                   arch + '-' +
@@ -202,16 +202,16 @@ def task(ctx, config):
                " flock --close " + lock +
                " make -C " + d +
                network +
-               " CEPH_GIT_URL=" + teuth_config.get_ceph_git_url() +
-               " CEPH_PKG_TYPE=" + pkg_type +
-               " CEPH_OS_TYPE=" + os_type +
-               " CEPH_OS_VERSION=" + os_version +
-               " CEPH_DIST=" + dist +
-               " CEPH_ARCH=" + arch +
-               " CEPH_SHA1=" + sha1 +
-               " CEPH_TAG=" + tag +
-               " CEPH_BRANCH=" + branch +
-               " CEPH_FLAVOR=" + flavor +
+               " ZBKC_GIT_URL=" + teuth_config.get_zbkc_git_url() +
+               " ZBKC_PKG_TYPE=" + pkg_type +
+               " ZBKC_OS_TYPE=" + os_type +
+               " ZBKC_OS_VERSION=" + os_version +
+               " ZBKC_DIST=" + dist +
+               " ZBKC_ARCH=" + arch +
+               " ZBKC_SHA1=" + sha1 +
+               " ZBKC_TAG=" + tag +
+               " ZBKC_BRANCH=" + branch +
+               " ZBKC_FLAVOR=" + flavor +
                " BUILD_FLAVOR=" + build_flavor +
                " HTTP_FLAVOR=" + http_flavor +
                " HTTP_ARCH=" + default_arch +

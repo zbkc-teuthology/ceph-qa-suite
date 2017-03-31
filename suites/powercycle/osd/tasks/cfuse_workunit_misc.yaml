@@ -1,5 +1,5 @@
 tasks:
-- ceph-fuse:
+- zbkc-fuse:
 - workunit:
     timeout: 6h
     clients:

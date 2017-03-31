@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       global:
         osd heartbeat grace: 100
@@ -10,7 +10,7 @@ overrides:
     default_idle_timeout: 1200
   s3tests:
     idle_timeout: 1200
-  ceph-fuse:
+  zbkc-fuse:
     client.0:
        mount_wait: 60
        mount_timeout: 120

@@ -20,14 +20,14 @@ def task(ctx, config):
     Specify which clients to run on as a list::
 
       tasks:
-        ceph:
+        zbkc:
         rbd_fsx:
           clients: [client.0, client.1]
 
     You can optionally change some properties of fsx:
 
       tasks:
-        ceph:
+        zbkc:
         rbd_fsx:
           clients: <list of clients>
           seed: <random seed number, or 0 to use the time>
@@ -53,7 +53,7 @@ def _run_one_client(ctx, config, role):
         args.append('sudo') # rbd(-nbd) map/unmap need privileges
     args.extend([
         'adjust-ulimits',
-        'ceph-coverage',
+        'zbkc-coverage',
         '{tdir}/archive/coverage'.format(tdir=testdir)
     ])
 
@@ -69,7 +69,7 @@ def _run_one_client(ctx, config, role):
         )
 
     args.extend([
-        'ceph_test_librbd_fsx',
+        'zbkc_test_librbd_fsx',
         '-d', # debug output for all operations
         '-W', '-R', # mmap doesn't work with rbd
         '-p', str(config.get('progress_interval', 100)), # show progress

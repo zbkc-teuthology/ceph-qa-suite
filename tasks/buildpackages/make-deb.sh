@@ -17,14 +17,14 @@
 
 # 
 # Create and upload a deb repository with the same naming conventions
-# as https://github.com/ceph/autobuild-ceph/blob/master/build-ceph-deb.sh
+# as https://github.com/zbkc/autobuild-zbkc/blob/master/build-zbkc-deb.sh
 #
 set -xe
 
 base=/tmp/release
 gitbuilder_host=$1
 codename=$2
-git_ceph_url=$3
+git_zbkc_url=$3
 sha1=$4
 flavor=$5
 arch=$6
@@ -34,7 +34,7 @@ sudo apt-get install -y git
 
 source $(dirname $0)/common.sh
 
-init_ceph $git_ceph_url $sha1
+init_zbkc $git_zbkc_url $sha1
 
 #codename=$(lsb_release -sc)
 releasedir=$base/$(lsb_release -si)/WORKDIR
@@ -53,7 +53,7 @@ vers=$(git describe --match "v*" | sed s/^v//)
 #
 dvers="$vers-1"
 : ${NPROC:=$(nproc)}
-ceph_dir=$(pwd)
+zbkc_dir=$(pwd)
 
 function build_package() {
 
@@ -82,13 +82,13 @@ function build_package() {
         esac
         ./configure $(flavor2configure $flavor) \
             --with-rocksdb --with-ocf \
-            --with-nss --with-debug --enable-cephfs-java \
+            --with-nss --with-debug --enable-zbkcfs-java \
             $lttng_opt --with-babeltrace
         #
         # use distdir= to set the name of the top level directory of the
         # tarbal to match the desired version
         #
-        make distdir=ceph-$vers dist
+        make distdir=zbkc-$vers dist
     else
       ./make-dist
       fileext="bz2"
@@ -96,31 +96,31 @@ function build_package() {
     #
     # rename the tarbal to match debian conventions and extract it
     #
-    mv ceph-$vers.tar.$fileext $releasedir/ceph_$vers.orig.tar.$fileext
-    tar -C $releasedir -xf $releasedir/ceph_$vers.orig.tar.$fileext
+    mv zbkc-$vers.tar.$fileext $releasedir/zbkc_$vers.orig.tar.$fileext
+    tar -C $releasedir -xf $releasedir/zbkc_$vers.orig.tar.$fileext
     #
     # copy the debian directory over
     #
-    cp -a debian $releasedir/ceph-$vers/debian
+    cp -a debian $releasedir/zbkc-$vers/debian
     cd $releasedir
     #
     # uncomment to remove -dbg packages
     # because they are large and take time to build
     #
-    #perl -ni -e 'print if(!(/^Package: .*-dbg$/../^$/))' ceph-$vers/debian/control
-    #perl -pi -e 's/--dbg-package.*//' ceph-$vers/debian/rules
+    #perl -ni -e 'print if(!(/^Package: .*-dbg$/../^$/))' zbkc-$vers/debian/control
+    #perl -pi -e 's/--dbg-package.*//' zbkc-$vers/debian/rules
     #
     # update the changelog to match the desired version
     #
-    cd ceph-$vers
+    cd zbkc-$vers
     local chvers=$(head -1 debian/changelog | perl -ne 's/.*\(//; s/\).*//; print')
     if [ "$chvers" != "$dvers" ]; then
-        DEBEMAIL="contact@ceph.com" dch -D $codename --force-distribution -b -v "$dvers" "new version"
+        DEBEMAIL="contact@zbkc.com" dch -D $codename --force-distribution -b -v "$dvers" "new version"
     fi
     #
     # create the packages (with ccache)
     #
-    export CEPH_EXTRA_CONFIGURE_ARGS=$(flavor2configure $flavor)
+    export ZBKC_EXTRA_CONFIGURE_ARGS=$(flavor2configure $flavor)
     j=$(maybe_parallel $NPROC $vers)
     PATH=/usr/lib/ccache:$PATH dpkg-buildpackage $j -uc -us -sa
 }
@@ -134,7 +134,7 @@ function build_repo() {
     # Create a repository in a directory with a name structured
     # as
     #
-    base=ceph-deb-$codename-$arch-$flavor
+    base=zbkc-deb-$codename-$arch-$flavor
     sha1_dir=$codename/$base/sha1/$sha1
     mkdir -p $sha1_dir/conf
     cat > $sha1_dir/conf/distributions <<EOF
@@ -146,7 +146,7 @@ EOF
     reprepro --basedir $sha1_dir include $codename WORKDIR/*.changes
     echo $dvers > $sha1_dir/version
     echo $sha1 > $sha1_dir/sha1
-    link_same $codename/$base/ref $ceph_dir $sha1
+    link_same $codename/$base/ref $zbkc_dir $sha1
     if test "$gitbuilder_host" ; then
         cd $codename
         sudo apt-get install -y rsync

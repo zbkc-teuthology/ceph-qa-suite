@@ -1,0 +1,16 @@
+
+os_type: ubuntu
+
+overrides:
+  zbkc:
+    conf:
+      global:
+        ms die on skipped message: false
+
+tasks:
+- install:
+- zbkc:
+- kclient: [client.0]
+- knfsd:
+    client.0:
+      options: [rw,no_root_squash,async]

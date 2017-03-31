@@ -2,7 +2,7 @@ roles:
 - [mon.0, mds.a, osd.0, osd.1, osd.2, client.0, client.1]
 tasks:
 - install:
-- ceph:
+- zbkc:
     conf:
       global:
         osd max object name len: 460
@@ -12,15 +12,15 @@ tasks:
         debug ms: 1
 - exec:
     client.0:
-    - ceph osd pool create data_cache 4
-    - ceph osd tier add cephfs_data data_cache
-    - ceph osd tier cache-mode data_cache writeback
-    - ceph osd tier set-overlay cephfs_data data_cache
-    - ceph osd pool set data_cache hit_set_type bloom
-    - ceph osd pool set data_cache hit_set_count 8
-    - ceph osd pool set data_cache hit_set_period 3600
-    - ceph osd pool set data_cache min_read_recency_for_promote 0
-- ceph-fuse:
+    - zbkc osd pool create data_cache 4
+    - zbkc osd tier add zbkcfs_data data_cache
+    - zbkc osd tier cache-mode data_cache writeback
+    - zbkc osd tier set-overlay zbkcfs_data data_cache
+    - zbkc osd pool set data_cache hit_set_type bloom
+    - zbkc osd pool set data_cache hit_set_count 8
+    - zbkc osd pool set data_cache hit_set_period 3600
+    - zbkc osd pool set data_cache min_read_recency_for_promote 0
+- zbkc-fuse:
 - exec:
     client.0:
       - sudo chmod 777 $TESTDIR/mnt.0/

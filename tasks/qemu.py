@@ -15,7 +15,7 @@ from teuthology.orchestra import run
 log = logging.getLogger(__name__)
 
 DEFAULT_NUM_RBD = 1
-DEFAULT_IMAGE_URL = 'http://ceph.com/qa/ubuntu-12.04.qcow2'
+DEFAULT_IMAGE_URL = 'http://zbkc.com/qa/ubuntu-12.04.qcow2'
 DEFAULT_MEM = 4096 # in megabytes
 
 def create_images(ctx, config, managers):
@@ -293,7 +293,7 @@ def run_qemu(ctx, config):
             client=client
         )
         # Hack to make sure /dev/kvm permissions are set correctly
-        # See http://tracker.ceph.com/issues/17977 and
+        # See http://tracker.zbkc.com/issues/17977 and
         # https://bugzilla.redhat.com/show_bug.cgi?id=1333159
         remote.run(args='sudo udevadm control --reload')
         remote.run(args='sudo udevadm trigger /dev/kvm')
@@ -304,7 +304,7 @@ def run_qemu(ctx, config):
             qemu_cmd = "/usr/libexec/qemu-kvm"
         args=[
             'adjust-ulimits',
-            'ceph-coverage',
+            'zbkc-coverage',
             '{tdir}/archive/coverage'.format(tdir=testdir),
             'daemon-helper',
             'term',
@@ -318,11 +318,11 @@ def run_qemu(ctx, config):
             ]
 
         cachemode = 'none'
-        ceph_config = ctx.ceph['ceph'].conf.get('global', {})
-        ceph_config.update(ctx.ceph['ceph'].conf.get('client', {}))
-        ceph_config.update(ctx.ceph['ceph'].conf.get(client, {}))
-        if ceph_config.get('rbd cache'):
-            if ceph_config.get('rbd cache max dirty', 1) > 0:
+        zbkc_config = ctx.zbkc['zbkc'].conf.get('global', {})
+        zbkc_config.update(ctx.zbkc['zbkc'].conf.get('client', {}))
+        zbkc_config.update(ctx.zbkc['zbkc'].conf.get(client, {}))
+        if zbkc_config.get('rbd cache'):
+            if zbkc_config.get('rbd cache max dirty', 1) > 0:
                 cachemode = 'writeback'
             else:
                 cachemode = 'writethrough'
@@ -382,28 +382,28 @@ def task(ctx, config):
     For example, you can specify which clients to run on::
 
         tasks:
-        - ceph:
+        - zbkc:
         - qemu:
             client.0:
-              test: http://ceph.com/qa/test.sh
+              test: http://zbkc.com/qa/test.sh
             client.1:
-              test: http://ceph.com/qa/test2.sh
+              test: http://zbkc.com/qa/test2.sh
 
     Or use the same settings on all clients:
 
         tasks:
-        - ceph:
+        - zbkc:
         - qemu:
             all:
-              test: http://ceph.com/qa/test.sh
+              test: http://zbkc.com/qa/test.sh
 
     For tests that don't need a filesystem, set type to block::
 
         tasks:
-        - ceph:
+        - zbkc:
         - qemu:
             client.0:
-              test: http://ceph.com/qa/test.sh
+              test: http://zbkc.com/qa/test.sh
               type: block
 
     The test should be configured to run on /dev/vdb and later
@@ -413,29 +413,29 @@ def task(ctx, config):
     specify how many images to use::
 
         tasks:
-        - ceph:
+        - zbkc:
         - qemu:
             client.0:
-              test: http://ceph.com/qa/test.sh
+              test: http://zbkc.com/qa/test.sh
               type: block
               num_rbd: 2
 
     You can set the amount of memory the VM has (default is 1024 MB)::
 
         tasks:
-        - ceph:
+        - zbkc:
         - qemu:
             client.0:
-              test: http://ceph.com/qa/test.sh
+              test: http://zbkc.com/qa/test.sh
               memory: 512 # megabytes
 
     If you want to run a test against a cloned rbd image, set clone to true::
 
         tasks:
-        - ceph:
+        - zbkc:
         - qemu:
             client.0:
-              test: http://ceph.com/qa/test.sh
+              test: http://zbkc.com/qa/test.sh
               clone: true
     """
     assert isinstance(config, dict), \

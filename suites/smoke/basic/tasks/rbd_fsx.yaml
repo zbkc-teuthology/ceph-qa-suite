@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         rbd cache: true
@@ -7,7 +7,7 @@ overrides:
         ms inject socket failures: 5000
 tasks:
 - install: null
-- ceph:
+- zbkc:
     fs: xfs
 - thrashosds:
     timeout: 1200

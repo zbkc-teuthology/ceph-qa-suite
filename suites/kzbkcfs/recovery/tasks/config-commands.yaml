@@ -1,0 +1,12 @@
+
+overrides:
+  zbkc:
+    conf:
+      global:
+        lockdep: true
+
+tasks:
+  - zbkcfs_test_runner:
+      fail_on_skip: false
+      modules:
+        - tasks.zbkcfs.test_config_commands

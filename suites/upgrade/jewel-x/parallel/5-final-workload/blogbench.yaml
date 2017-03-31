@@ -1,11 +1,11 @@
 meta:
 - desc: |
-   run a cephfs stress test
-   mount ceph-fuse on client.3 before running workunit
+   run a zbkcfs stress test
+   mount zbkc-fuse on client.3 before running workunit
 tasks:
 - sequential:
-  - ceph-fuse:
-  - print: "**** done ceph-fuse 5-final-workload"
+  - zbkc-fuse:
+  - print: "**** done zbkc-fuse 5-final-workload"
   - workunit:
       clients:
          client.3:

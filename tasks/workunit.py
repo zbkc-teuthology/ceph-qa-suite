@@ -1,5 +1,5 @@
 """
-Workunit task -- Run ceph on sets of specific clients
+Workunit task -- Run zbkc on sets of specific clients
 """
 import logging
 import pipes
@@ -18,13 +18,13 @@ log = logging.getLogger(__name__)
 
 def task(ctx, config):
     """
-    Run ceph on all workunits found under the specified path.
+    Run zbkc on all workunits found under the specified path.
 
     For example::
 
         tasks:
-        - ceph:
-        - ceph-fuse: [client.0]
+        - zbkc:
+        - zbkc-fuse: [client.0]
         - workunit:
             clients:
               client.0: [direct_io, xattrs.sh]
@@ -33,8 +33,8 @@ def task(ctx, config):
 
     You can also run a list of workunits on all clients:
         tasks:
-        - ceph:
-        - ceph-fuse:
+        - zbkc:
+        - zbkc-fuse:
         - workunit:
             tag: v0.47
             clients:
@@ -48,8 +48,8 @@ def task(ctx, config):
     can also specify a time limit for each work unit (defaults to 3h):
 
         tasks:
-        - ceph:
-        - ceph-fuse:
+        - zbkc:
+        - zbkc-fuse:
         - workunit:
             sha1: 9b28948635b17165d17c1cf83d4a870bd138ddf6
             clients:
@@ -59,14 +59,14 @@ def task(ctx, config):
               BAZ: quux
             timeout: 3h
 
-    This task supports roles that include a ceph cluster, e.g.::
+    This task supports roles that include a zbkc cluster, e.g.::
 
         tasks:
-        - ceph:
+        - zbkc:
         - workunit:
             clients:
               backup.client.0: [foo]
-              client.1: [bar] # cluster is implicitly 'ceph'
+              client.1: [bar] # cluster is implicitly 'zbkc'
 
     :param ctx: Context
     :param config: Configuration
@@ -130,9 +130,9 @@ def _client_mountpoint(ctx, cluster, id_):
     Returns the path to the expected mountpoint for workunits running
     on some kind of filesystem.
     """
-    # for compatibility with tasks like ceph-fuse that aren't cluster-aware yet,
-    # only include the cluster name in the dir if the cluster is not 'ceph'
-    if cluster == 'ceph':
+    # for compatibility with tasks like zbkc-fuse that aren't cluster-aware yet,
+    # only include the cluster name in the dir if the cluster is not 'zbkc'
+    if cluster == 'zbkc':
         dir_ = 'mnt.{0}'.format(id_)
     else:
         dir_ = 'mnt.{0}.{1}'.format(cluster, id_)
@@ -190,7 +190,7 @@ def _make_scratch_dir(ctx, role, subdir):
     remote = get_remote_for_role(ctx, role)
     dir_owner = remote.user
     mnt = _client_mountpoint(ctx, cluster, id_)
-    # if neither kclient nor ceph-fuse are required for a workunit,
+    # if neither kclient nor zbkc-fuse are required for a workunit,
     # mnt may not exist. Stat and create the directory if it doesn't.
     try:
         remote.run(
@@ -308,7 +308,7 @@ def _run_tests(ctx, refspec, role, tests, env, subdir=None, timeout=None):
     srcdir = '{tdir}/workunit.{role}'.format(tdir=testdir, role=role)
     clonedir = '{tdir}/clone.{role}'.format(tdir=testdir, role=role)
 
-    git_url = teuth_config.get_ceph_git_url()
+    git_url = teuth_config.get_zbkc_git_url()
     remote.run(
         logger=log.getChild(role),
         args=[
@@ -356,11 +356,11 @@ def _run_tests(ctx, refspec, role, tests, env, subdir=None, timeout=None):
                     run.Raw('&&'),
                     'cd', '--', scratch_tmp,
                     run.Raw('&&'),
-                    run.Raw('CEPH_CLI_TEST_DUP_COMMAND=1'),
-                    run.Raw('CEPH_REF={ref}'.format(ref=refspec)),
+                    run.Raw('ZBKC_CLI_TEST_DUP_COMMAND=1'),
+                    run.Raw('ZBKC_REF={ref}'.format(ref=refspec)),
                     run.Raw('TESTDIR="{tdir}"'.format(tdir=testdir)),
-                    run.Raw('CEPH_ARGS="--cluster {0}"'.format(cluster)),
-                    run.Raw('CEPH_ID="{id}"'.format(id=id_)),
+                    run.Raw('ZBKC_ARGS="--cluster {0}"'.format(cluster)),
+                    run.Raw('ZBKC_ID="{id}"'.format(id=id_)),
                     run.Raw('PATH=$PATH:/usr/sbin')
                 ]
                 if env is not None:
@@ -370,7 +370,7 @@ def _run_tests(ctx, refspec, role, tests, env, subdir=None, timeout=None):
                         args.append(run.Raw(env_arg))
                 args.extend([
                     'adjust-ulimits',
-                    'ceph-coverage',
+                    'zbkc-coverage',
                     '{tdir}/archive/coverage'.format(tdir=testdir)])
                 if timeout and timeout != '0':
                     args.extend(['timeout', timeout])

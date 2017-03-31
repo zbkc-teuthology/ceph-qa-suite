@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
     conf:
       osd:
         osd scrub min interval: 60

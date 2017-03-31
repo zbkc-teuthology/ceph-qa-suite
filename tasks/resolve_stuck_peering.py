@@ -20,7 +20,7 @@ def task(ctx, config):
         assert isinstance(config, dict), \
             'Resolve stuck peering only accepts a dict for config'
 
-    manager = ctx.managers['ceph']
+    manager = ctx.managers['zbkc']
 
     while len(manager.get_osd_status()['up']) < 3:
         time.sleep(10)

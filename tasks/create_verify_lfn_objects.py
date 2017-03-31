@@ -28,7 +28,7 @@ def task(ctx, config):
     name_length = config.get('name_length', [400])
     namespace = config.get('namespace', [None])
     prefix = config.get('prefix', None)
-    manager = ctx.managers['ceph']
+    manager = ctx.managers['zbkc']
 
     objects = []
     for l in name_length:
@@ -55,7 +55,7 @@ def task(ctx, config):
     try:
         yield
     finally:
-        log.info('ceph_verify_lfn_objects verifying...')
+        log.info('zbkc_verify_lfn_objects verifying...')
         for ns, name in objects:
             err = manager.do_get(
                 pool,
@@ -64,7 +64,7 @@ def task(ctx, config):
             log.info("err is " + str(err))
             assert err == 0
 
-        log.info('ceph_verify_lfn_objects deleting...')
+        log.info('zbkc_verify_lfn_objects deleting...')
         for ns, name in objects:
             err = manager.do_rm(
                 pool,
@@ -73,7 +73,7 @@ def task(ctx, config):
             log.info("err is " + str(err))
             assert err == 0
 
-        log.info('ceph_verify_lfn_objects verifying absent...')
+        log.info('zbkc_verify_lfn_objects verifying absent...')
         for ns, name in objects:
             err = manager.do_get(
                 pool,

@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: ext4
 - rgw: [client.0]
 - swift:

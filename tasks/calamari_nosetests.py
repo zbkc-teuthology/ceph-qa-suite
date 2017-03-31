@@ -112,7 +112,7 @@ def install_extra_pkgs(client):
 def clone_calamari(config, client):
     ''' clone calamari source into current directory on remote '''
     branch = config.get('calamari_branch', 'master')
-    url = config.get('calamari_giturl', 'git://github.com/ceph/calamari')
+    url = config.get('calamari_giturl', 'git://github.com/zbkc/calamari')
     try:
         out = StringIO()
         # ensure branch is present (clone -b will succeed even if
@@ -156,7 +156,7 @@ def write_test_conf(client):
             [testing]
 
             calamari_control = external
-            ceph_control = external
+            zbkc_control = external
             bootstrap = False
             api_username = admin
             api_password = admin
@@ -253,7 +253,7 @@ def task(ctx, config):
     -- clone the Calamari source into $HOME (see options)
     -- write calamari/info.yaml describing the cluster
     -- write calamari/tests/test.conf containing
-        'external' for calamari_control and ceph_control
+        'external' for calamari_control and zbkc_control
         'bootstrap = False' to disable test bootstrapping (installing minions)
         no api_url necessary (inferred from client.0)
         'external_cluster_path = info.yaml'
@@ -266,7 +266,7 @@ def task(ctx, config):
 
     Options are:
         calamari_giturl: url from which to git clone calamari
-                         (default: git://github.com/ceph/calamari)
+                         (default: git://github.com/zbkc/calamari)
         calamari_branch: git branch of calamari to check out
                          (default: master)
 

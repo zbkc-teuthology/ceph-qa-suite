@@ -11,7 +11,7 @@ roles:
 
 tasks:
 - install:
-- ceph:
+- zbkc:
     fs: xfs
     log-whitelist:
     - wrongly marked me down

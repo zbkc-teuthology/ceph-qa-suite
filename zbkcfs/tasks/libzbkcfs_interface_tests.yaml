@@ -1,0 +1,10 @@
+overrides:
+  zbkc-fuse:
+    disabled: true
+  kclient:
+    disabled: true
+tasks:
+- workunit:
+    clients:
+      client.0:
+        - libzbkcfs/test.sh

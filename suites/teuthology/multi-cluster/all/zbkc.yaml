@@ -1,0 +1,23 @@
+roles:
+- - zbkc.mon.a
+  - zbkc.mon.b
+  - backup.osd.0
+  - backup.osd.1
+  - backup.osd.2
+  - backup.client.0
+- - backup.mon.a
+  - zbkc.osd.0
+  - zbkc.osd.1
+  - zbkc.osd.2
+  - zbkc.client.0
+  - client.1
+  - osd.3
+tasks:
+- install:
+- zbkc:
+    cluster: backup
+- zbkc:
+- workunit:
+    clients:
+      zbkc.client.0: [true.sh]
+      backup.client.0: [true.sh]

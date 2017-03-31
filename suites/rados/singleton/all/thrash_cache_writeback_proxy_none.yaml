@@ -13,29 +13,29 @@ openstack:
       size: 30 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
     log-whitelist:
     - wrongly marked me down
     - slow request
 - exec:
     client.0:
-      - sudo ceph osd pool create base 4
-      - sudo ceph osd pool create cache 4
-      - sudo ceph osd tier add base cache
-      - sudo ceph osd tier cache-mode cache writeback
-      - sudo ceph osd tier set-overlay base cache
-      - sudo ceph osd pool set cache hit_set_type bloom
-      - sudo ceph osd pool set cache hit_set_count 8
-      - sudo ceph osd pool set cache hit_set_period 60
-      - sudo ceph osd pool set cache target_max_objects 500
+      - sudo zbkc osd pool create base 4
+      - sudo zbkc osd pool create cache 4
+      - sudo zbkc osd tier add base cache
+      - sudo zbkc osd tier cache-mode cache writeback
+      - sudo zbkc osd tier set-overlay base cache
+      - sudo zbkc osd pool set cache hit_set_type bloom
+      - sudo zbkc osd pool set cache hit_set_count 8
+      - sudo zbkc osd pool set cache hit_set_period 60
+      - sudo zbkc osd pool set cache target_max_objects 500
 - background_exec:
     mon.a:
       - while true
       - do sleep 30
       - echo proxy
-      - sudo ceph osd tier cache-mode cache proxy
+      - sudo zbkc osd tier cache-mode cache proxy
       - sleep 10
-      - sudo ceph osd pool set cache cache_target_full_ratio .001
+      - sudo zbkc osd pool set cache cache_target_full_ratio .001
       - echo cache-try-flush-evict-all
       - rados -p cache cache-try-flush-evict-all
       - sleep 5
@@ -43,14 +43,14 @@ tasks:
       - rados -p cache cache-flush-evict-all
       - sleep 5
       - echo remove overlay
-      - sudo ceph osd tier remove-overlay base
+      - sudo zbkc osd tier remove-overlay base
       - sleep 20
       - echo add writeback overlay
-      - sudo ceph osd tier cache-mode cache writeback
-      - sudo ceph osd pool set cache cache_target_full_ratio .8
-      - sudo ceph osd tier set-overlay base cache
+      - sudo zbkc osd tier cache-mode cache writeback
+      - sudo zbkc osd pool set cache cache_target_full_ratio .8
+      - sudo zbkc osd tier set-overlay base cache
       - sleep 30
-      - sudo ceph osd tier cache-mode cache readproxy
+      - sudo zbkc osd tier cache-mode cache readproxy
       - done
 - rados:
     clients: [client.0]

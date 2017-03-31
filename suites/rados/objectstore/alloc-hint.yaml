@@ -6,7 +6,7 @@ openstack:
       size: 10 # GB
 
 overrides:
-  ceph:
+  zbkc:
     fs: xfs
     conf:
       osd:
@@ -14,7 +14,7 @@ overrides:
 
 tasks:
 - install:
-- ceph:
+- zbkc:
 - workunit:
     clients:
       all:

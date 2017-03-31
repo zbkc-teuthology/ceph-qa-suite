@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         ms_inject_delay_probability: 1
@@ -7,7 +7,7 @@ overrides:
         ms_inject_delay_max: 5
         client_oc_max_dirty_age: 1
 tasks:
-- ceph-fuse:
+- zbkc-fuse:
 - exec:
     client.0:
       - dd if=/dev/zero of=./foo count=100

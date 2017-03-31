@@ -2,7 +2,7 @@
 import logging
 import contextlib
 import time
-import ceph_manager
+import zbkc_manager
 from teuthology import misc
 from teuthology.orchestra.run import CommandFailedError, Raw
 
@@ -24,8 +24,8 @@ def task(ctx, config):
 
     mds_id = mdslist[0]
     (mds_remote,) = ctx.cluster.only('mds.{_id}'.format(_id=mds_id)).remotes.iterkeys()
-    manager = ceph_manager.CephManager(
-        mds_remote, ctx=ctx, logger=log.getChild('ceph_manager'),
+    manager = zbkc_manager.ZbkcManager(
+        mds_remote, ctx=ctx, logger=log.getChild('zbkc_manager'),
     )
 
     # Stop MDS

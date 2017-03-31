@@ -5,10 +5,10 @@ tasks:
         tag: v0.94.1
     - exec:
         client.0:
-          - ceph --version | grep 'version 0.94.1'
+          - zbkc --version | grep 'version 0.94.1'
     - install.upgrade:
         client.0:
           tag: v0.94.3
     - exec:
         client.0:
-          - ceph --version | grep 'version 0.94.3'
+          - zbkc --version | grep 'version 0.94.3'

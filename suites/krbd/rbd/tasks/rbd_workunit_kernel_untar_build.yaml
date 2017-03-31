@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
 - rbd:
     all:
 - workunit:

@@ -30,7 +30,7 @@ def task(ctx, config):
         min_snaps = config.get('min_snaps', 5)
         period = config.get('period', 30)
         snaps = []
-        manager = ctx.managers['ceph']
+        manager = ctx.managers['zbkc']
         def remove_snap():
             assert len(snaps) > 0
             snap = random.choice(snaps)

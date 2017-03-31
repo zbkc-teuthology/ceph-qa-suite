@@ -1,5 +1,5 @@
 tasks:
 - exec:
     osd.0:
-      - ceph osd set sortbitwise
-      - for p in `ceph osd pool ls` ; do ceph osd pool set $p use_gmt_hitset true ; done
+      - zbkc osd set sortbitwise
+      - for p in `zbkc osd pool ls` ; do zbkc osd pool set $p use_gmt_hitset true ; done

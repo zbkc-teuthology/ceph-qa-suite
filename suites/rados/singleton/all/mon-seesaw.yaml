@@ -9,7 +9,7 @@ openstack:
       size: 10 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
     config:
       global:
         osd pool default min size : 1
@@ -17,10 +17,10 @@ tasks:
         debug monc: 1
         debug ms: 1
 - mon_seesaw:
-- ceph_manager.create_pool:
+- zbkc_manager.create_pool:
     kwargs:
       pool_name: test
       pg_num: 1
-- ceph_manager.wait_for_clean:
+- zbkc_manager.wait_for_clean:
     kwargs:
       timeout: 60

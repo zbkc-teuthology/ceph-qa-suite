@@ -2,7 +2,7 @@
 Monitor recovery
 """
 import logging
-import ceph_manager
+import zbkc_manager
 from teuthology import misc as teuthology
 
 
@@ -19,10 +19,10 @@ def task(ctx, config):
     first_mon = teuthology.get_first_mon(ctx, config)
     (mon,) = ctx.cluster.only(first_mon).remotes.iterkeys()
 
-    manager = ceph_manager.CephManager(
+    manager = zbkc_manager.ZbkcManager(
         mon,
         ctx=ctx,
-        logger=log.getChild('ceph_manager'),
+        logger=log.getChild('zbkc_manager'),
         )
 
     mons = [f.split('.')[1] for f in teuthology.get_mon_names(ctx)]

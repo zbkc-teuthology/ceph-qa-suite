@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
     log-whitelist:
     - wrongly marked me down
 - workunit:

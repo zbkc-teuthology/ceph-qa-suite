@@ -38,7 +38,7 @@ def task(ctx, config):
 
     Options are (see DEFAULTS above):
 
-    version -- ceph version we are testing against
+    version -- zbkc version we are testing against
     test_image -- Can be an HTTP URL, in which case fetch from this
                   http path; can also be local path
     start_browser -- If True, start a browser.  To be used by runs that will
@@ -64,8 +64,8 @@ def task(ctx, config):
     with contextutil.nested(
         lambda: adjust_yum_repos(ctx, cal_svr, config['no_epel']),
         lambda: calamari_install(config, cal_svr),
-        lambda: ceph_install(ctx, cal_svr),
-        # do it again because ceph-deploy installed epel for centos
+        lambda: zbkc_install(ctx, cal_svr),
+        # do it again because zbkc-deploy installed epel for centos
         lambda: remove_epel(ctx, config['no_epel']),
         lambda: calamari_connect(ctx, cal_svr),
         lambda: browser(config['start_browser'], cal_svr.hostname),
@@ -109,7 +109,7 @@ def fix_yum_repos(remote, distro):
     contain a repo file named rhel<version-number>.repo
     """
     if distro.startswith('centos'):
-        # hack alert: detour: install lttng for ceph
+        # hack alert: detour: install lttng for zbkc
         # this works because epel is preinstalled on the vpms
         # this is not a generic solution
         # this is here solely to test the one-off 1.3.0 release for centos6
@@ -145,7 +145,7 @@ def fix_yum_repos(remote, distro):
         repo_contents = '\n'.join(
             ('[%s]' % repotitle,
              'name=%s $releasever - $basearch' % reponame,
-             'baseurl=http://apt-mirror.front.sepia.ceph.com/' + path,
+             'baseurl=http://apt-mirror.front.sepia.zbkc.com/' + path,
              'gpgcheck=0',
              'enabled=1')
         )
@@ -292,29 +292,29 @@ def calamari_install(config, cal_svr):
 
 
 @contextlib.contextmanager
-def ceph_install(ctx, cal_svr):
+def zbkc_install(ctx, cal_svr):
     """
-    Install ceph if ceph was not previously installed by teuthology.  This
+    Install zbkc if zbkc was not previously installed by teuthology.  This
     code tests the case where calamari is installed on a brand new system.
     """
     loc_inst = False
     if 'install' not in [x.keys()[0] for x in ctx.config['tasks']]:
         loc_inst = True
-        ret = deploy_ceph(ctx, cal_svr)
+        ret = deploy_zbkc(ctx, cal_svr)
         if ret:
-            raise RuntimeError('ceph installs failed')
+            raise RuntimeError('zbkc installs failed')
     try:
         yield
     finally:
         if loc_inst:
-            if not undeploy_ceph(ctx, cal_svr):
-                log.error('Cleanup of Ceph installed by Calamari-setup failed')
+            if not undeploy_zbkc(ctx, cal_svr):
+                log.error('Cleanup of Zbkc installed by Calamari-setup failed')
 
 
-def deploy_ceph(ctx, cal_svr):
+def deploy_zbkc(ctx, cal_svr):
     """
-    Perform the ceph-deploy actions needed to bring up a Ceph cluster.  This
-    test is needed to check the ceph-deploy that comes with the calamari
+    Perform the zbkc-deploy actions needed to bring up a Zbkc cluster.  This
+    test is needed to check the zbkc-deploy that comes with the calamari
     package.
     """
     osd_to_name = {}
@@ -335,10 +335,10 @@ def deploy_ceph(ctx, cal_svr):
                 all_mons.add(remote.shortname)
 
     # figure out whether we're in "1.3+" mode: prior to 1.3, there was
-    # only one Ceph repo, and it was all installed on every Ceph host.
+    # only one Zbkc repo, and it was all installed on every Zbkc host.
     # with 1.3, we've split that into MON and OSD repos (in order to
     # be able to separately track subscriptions per-node).  This
-    # requires new switches to ceph-deploy to select which locally-served
+    # requires new switches to zbkc-deploy to select which locally-served
     # repo is connected to which cluster host.
     #
     # (TODO: A further issue is that the installation/setup may not have
@@ -349,40 +349,40 @@ def deploy_ceph(ctx, cal_svr):
     use_install_repo = (r.returncode == 0)
 
     # pre-1.3:
-    # ceph-deploy new <all_mons>
-    # ceph-deploy install <all_machines>
-    # ceph-deploy mon create-initial
+    # zbkc-deploy new <all_mons>
+    # zbkc-deploy install <all_machines>
+    # zbkc-deploy mon create-initial
     #
     # 1.3 and later:
-    # ceph-deploy new <all_mons>
-    # ceph-deploy install --repo --release=ceph-mon <all_mons>
-    # ceph-deploy install <all_mons>
-    # ceph-deploy install --repo --release=ceph-osd <all_osds>
-    # ceph-deploy install <all_osds>
-    # ceph-deploy mon create-initial
+    # zbkc-deploy new <all_mons>
+    # zbkc-deploy install --repo --release=zbkc-mon <all_mons>
+    # zbkc-deploy install <all_mons>
+    # zbkc-deploy install --repo --release=zbkc-osd <all_osds>
+    # zbkc-deploy install <all_osds>
+    # zbkc-deploy mon create-initial
     #
     # one might think the install <all_mons> and install <all_osds>
     # commands would need --mon and --osd, but #12147 has not yet
     # made it into RHCS 1.3.0; since the package split also hasn't
     # landed, we can avoid using the flag and avoid the bug.
 
-    cmds = ['ceph-deploy new ' + ' '.join(all_mons)]
+    cmds = ['zbkc-deploy new ' + ' '.join(all_mons)]
 
     if use_install_repo:
-        cmds.append('ceph-deploy repo ceph-mon ' +
+        cmds.append('zbkc-deploy repo zbkc-mon ' +
                     ' '.join(all_mons))
-        cmds.append('ceph-deploy install --no-adjust-repos --mon ' +
+        cmds.append('zbkc-deploy install --no-adjust-repos --mon ' +
                     ' '.join(all_mons))
-        cmds.append('ceph-deploy repo ceph-osd ' +
+        cmds.append('zbkc-deploy repo zbkc-osd ' +
                     ' '.join(all_osds))
-        cmds.append('ceph-deploy install --no-adjust-repos --osd ' +
+        cmds.append('zbkc-deploy install --no-adjust-repos --osd ' +
                     ' '.join(all_osds))
         # We tell users to use `hostname` in our docs. Do the same here.
-        cmds.append('ceph-deploy install --no-adjust-repos --cli `hostname`')
+        cmds.append('zbkc-deploy install --no-adjust-repos --cli `hostname`')
     else:
-        cmds.append('ceph-deploy install ' + ' '.join(all_machines))
+        cmds.append('zbkc-deploy install ' + ' '.join(all_machines))
 
-    cmds.append('ceph-deploy mon create-initial')
+    cmds.append('zbkc-deploy mon create-initial')
 
     for cmd in cmds:
         cal_svr.run(args=cmd).exitstatus
@@ -394,7 +394,7 @@ def deploy_ceph(ctx, cal_svr):
         for osdn in osd_to_name:
             osd_mac = osd_to_name[osdn]
             mach_osd_cnt[osd_mac] = mach_osd_cnt.get(osd_mac, 0) + 1
-            arg_list = ['ceph-deploy']
+            arg_list = ['zbkc-deploy']
             arg_list.extend(cmd_pts)
             disk_id = '%s:vd%s' % (osd_to_name[osdn],
                                    disk_labels[mach_osd_cnt[osd_mac]])
@@ -404,9 +404,9 @@ def deploy_ceph(ctx, cal_svr):
             cal_svr.run(args=arg_list).exitstatus
 
 
-def undeploy_ceph(ctx, cal_svr):
+def undeploy_zbkc(ctx, cal_svr):
     """
-    Cleanup deployment of ceph.
+    Cleanup deployment of zbkc.
     """
     all_machines = []
     ret = True
@@ -418,15 +418,15 @@ def undeploy_ceph(ctx, cal_svr):
         ):
             continue
         ret &= remote.run(
-            args=['sudo', 'stop', 'ceph-all', run.Raw('||'),
-                  'sudo', 'service', 'ceph', 'stop']
+            args=['sudo', 'stop', 'zbkc-all', run.Raw('||'),
+                  'sudo', 'service', 'zbkc', 'stop']
         ).exitstatus
         all_machines.append(remote.shortname)
     all_machines = set(all_machines)
-    cmd1 = ['ceph-deploy', 'uninstall']
+    cmd1 = ['zbkc-deploy', 'uninstall']
     cmd1.extend(all_machines)
     ret &= cal_svr.run(args=cmd1).exitstatus
-    cmd2 = ['ceph-deploy', 'purge']
+    cmd2 = ['zbkc-deploy', 'purge']
     cmd2.extend(all_machines)
     ret &= cal_svr.run(args=cmd2).exitstatus
     for remote in ctx.cluster.remotes:
@@ -438,9 +438,9 @@ def undeploy_ceph(ctx, cal_svr):
 @contextlib.contextmanager
 def calamari_connect(ctx, cal_svr):
     """
-    Connect calamari to the ceph nodes.
+    Connect calamari to the zbkc nodes.
     """
-    connects = ['ceph-deploy', 'calamari', 'connect']
+    connects = ['zbkc-deploy', 'calamari', 'connect']
     for machine_info in ctx.cluster.remotes:
         if 'client.0' not in ctx.cluster.remotes[machine_info]:
             connects.append(machine_info.shortname)

@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         ms_inject_delay_probability: 1

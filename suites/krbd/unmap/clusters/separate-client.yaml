@@ -1,6 +1,6 @@
 # fixed-1.yaml, but with client.0 on a separate target
 overrides:
-  ceph-deploy:
+  zbkc-deploy:
     conf:
       global:
         osd pool default size: 2

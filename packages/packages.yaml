@@ -1,29 +1,29 @@
 ---
-ceph:
+zbkc:
   deb:
-  - ceph
-  - ceph-mds
-  - ceph-mgr
-  - ceph-common
-  - ceph-fuse
-  - ceph-test
+  - zbkc
+  - zbkc-mds
+  - zbkc-mgr
+  - zbkc-common
+  - zbkc-fuse
+  - zbkc-test
   - radosgw
-  - python-ceph
-  - libcephfs2
-  - libcephfs-dev
-  - libcephfs-java
-  - libcephfs-jni
+  - python-zbkc
+  - libzbkcfs2
+  - libzbkcfs-dev
+  - libzbkcfs-java
+  - libzbkcfs-jni
   - librados2
   - librbd1
   - rbd-fuse
-  - ceph-common-dbg
-  - ceph-fuse-dbg
-  - ceph-mds-dbg
-  - ceph-mgr-dbg
-  - ceph-mon-dbg
-  - ceph-osd-dbg
-  - ceph-test-dbg
-  - libcephfs2-dbg
+  - zbkc-common-dbg
+  - zbkc-fuse-dbg
+  - zbkc-mds-dbg
+  - zbkc-mgr-dbg
+  - zbkc-mon-dbg
+  - zbkc-osd-dbg
+  - zbkc-test-dbg
+  - libzbkcfs2-dbg
   - librados2-dbg
   - libradosstriper1-dbg
   - librbd1-dbg
@@ -33,17 +33,17 @@ ceph:
   - rbd-mirror-dbg
   - rbd-nbd-dbg
   rpm:
-  - ceph-radosgw
-  - ceph-test
-  - ceph
-  - ceph-mgr
-  - ceph-fuse
-  - cephfs-java
-  - libcephfs_jni1
-  - libcephfs2
-  - libcephfs-devel
+  - zbkc-radosgw
+  - zbkc-test
+  - zbkc
+  - zbkc-mgr
+  - zbkc-fuse
+  - zbkcfs-java
+  - libzbkcfs_jni1
+  - libzbkcfs2
+  - libzbkcfs-devel
   - librados2
   - librbd1
-  - python-ceph
+  - python-zbkc
   - rbd-fuse
-  - ceph-debuginfo
+  - zbkc-debuginfo

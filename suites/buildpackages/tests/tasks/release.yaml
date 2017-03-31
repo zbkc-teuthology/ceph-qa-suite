@@ -1,6 +1,6 @@
-# --suite buildpackages/tests --ceph v10.0.1 --filter centos_7.2,ubuntu_14.04
+# --suite buildpackages/tests --zbkc v10.0.1 --filter centos_7.2,ubuntu_14.04
 overrides:
-   ansible.cephlab:
+   ansible.zbkclab:
      playbook: users.yml
    buildpackages:
      good_machine:
@@ -17,4 +17,4 @@ tasks:
     - install:
     - exec:
         client.0:
-          - ceph --version | grep 'version '
+          - zbkc --version | grep 'version '

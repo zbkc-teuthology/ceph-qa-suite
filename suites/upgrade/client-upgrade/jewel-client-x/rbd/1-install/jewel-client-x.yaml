@@ -1,11 +1,11 @@
 tasks:
 - install:
     branch: jewel
-    exclude_packages: ['ceph-mgr','libcephfs2','libcephfs-devel','libcephfs-dev']
+    exclude_packages: ['zbkc-mgr','libzbkcfs2','libzbkcfs-devel','libzbkcfs-dev']
 - print: "**** done install jewel"
 - install.upgrade:
-   exclude_packages: ['ceph-test', 'ceph-test-dbg']
+   exclude_packages: ['zbkc-test', 'zbkc-test-dbg']
    client.1:
 - print: "**** done install.upgrade to -x on client.0"
-- ceph:
-- print: "**** done ceph task"
+- zbkc:
+- print: "**** done zbkc task"

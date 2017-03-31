@@ -1,7 +1,7 @@
 overrides:
   thrashosds:
     min_in: 4
-  ceph:
+  zbkc:
     conf:
       global:
         osd_pool_default_size: 3

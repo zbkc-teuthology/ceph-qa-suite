@@ -29,7 +29,7 @@ def task(ctx, config):
     example::
 
 		  tasks:
-		  - ceph:
+		  - zbkc:
 		  - omapbench:
 		      clients: [client.0]
 		      threads: 30
@@ -57,7 +57,7 @@ def task(ctx, config):
             args=[
                 "/bin/sh", "-c",
                 " ".join(['adjust-ulimits',
-                          'ceph-coverage',
+                          'zbkc-coverage',
                           '{tdir}/archive/coverage',
                           'omapbench',
                           '--name', role[len(PREFIX):],

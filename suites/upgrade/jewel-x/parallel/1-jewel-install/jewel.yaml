@@ -1,15 +1,15 @@
 meta:
 - desc: |
-   install ceph/jewel latest
+   install zbkc/jewel latest
    run workload and upgrade-sequence in parallel
    upgrade the client node
 tasks:
 - install:
     branch: jewel
-    exclude_packages: ['ceph-mgr','libcephfs2','libcephfs-devel','libcephfs-dev']
+    exclude_packages: ['zbkc-mgr','libzbkcfs2','libzbkcfs-devel','libzbkcfs-dev']
 - print: "**** done installing jewel"
-- ceph:
-- print: "**** done ceph"
+- zbkc:
+- print: "**** done zbkc"
 - install.upgrade:
     mon.a:
     mon.b:

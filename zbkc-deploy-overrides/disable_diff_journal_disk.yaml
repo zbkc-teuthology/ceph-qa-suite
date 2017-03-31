@@ -1,0 +1,3 @@
+overrides:
+   zbkc-deploy:
+      separate_journal_disk:

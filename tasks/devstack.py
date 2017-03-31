@@ -34,7 +34,7 @@ def task(ctx, config):
 @contextlib.contextmanager
 def install(ctx, config):
     """
-    Install OpenStack DevStack and configure it to use a Ceph cluster for
+    Install OpenStack DevStack and configure it to use a Zbkc cluster for
     Glance and Cinder.
 
     Requires one node with a role 'devstack'
@@ -51,7 +51,7 @@ def install(ctx, config):
 
     This was created using documentation found here:
         https://github.com/openstack-dev/devstack/blob/master/README.md
-        http://ceph.com/docs/master/rbd/rbd-openstack/
+        http://zbkc.com/docs/master/rbd/rbd-openstack/
     """
     if config is None:
         config = {}
@@ -64,7 +64,7 @@ def install(ctx, config):
     devstack_branch = config.get("branch", "master")
     install_devstack(devstack_node, devstack_branch)
     try:
-        configure_devstack_and_ceph(ctx, config, devstack_node, an_osd_node)
+        configure_devstack_and_zbkc(ctx, config, devstack_node, an_osd_node)
         yield
     finally:
         pass
@@ -88,15 +88,15 @@ def install_devstack(devstack_node, branch="master"):
     devstack_node.run(args=args)
 
 
-def configure_devstack_and_ceph(ctx, config, devstack_node, ceph_node):
+def configure_devstack_and_zbkc(ctx, config, devstack_node, zbkc_node):
     pool_size = config.get('pool_size', '128')
-    create_pools(ceph_node, pool_size)
-    distribute_ceph_conf(devstack_node, ceph_node)
-    # This is where we would install python-ceph and ceph-common but it appears
-    # the ceph task does that for us.
-    generate_ceph_keys(ceph_node)
-    distribute_ceph_keys(devstack_node, ceph_node)
-    secret_uuid = set_libvirt_secret(devstack_node, ceph_node)
+    create_pools(zbkc_node, pool_size)
+    distribute_zbkc_conf(devstack_node, zbkc_node)
+    # This is where we would install python-zbkc and zbkc-common but it appears
+    # the zbkc task does that for us.
+    generate_zbkc_keys(zbkc_node)
+    distribute_zbkc_keys(devstack_node, zbkc_node)
+    secret_uuid = set_libvirt_secret(devstack_node, zbkc_node)
     update_devstack_config_files(devstack_node, secret_uuid)
     set_apache_servername(devstack_node)
     # Rebooting is the most-often-used method of restarting devstack services
@@ -105,75 +105,75 @@ def configure_devstack_and_ceph(ctx, config, devstack_node, ceph_node):
     restart_apache(devstack_node)
 
 
-def create_pools(ceph_node, pool_size):
-    log.info("Creating pools on Ceph cluster...")
+def create_pools(zbkc_node, pool_size):
+    log.info("Creating pools on Zbkc cluster...")
 
     for pool_name in ['volumes', 'images', 'backups']:
-        args = ['sudo', 'ceph', 'osd', 'pool', 'create', pool_name, pool_size]
-        ceph_node.run(args=args)
+        args = ['sudo', 'zbkc', 'osd', 'pool', 'create', pool_name, pool_size]
+        zbkc_node.run(args=args)
 
 
-def distribute_ceph_conf(devstack_node, ceph_node):
-    log.info("Copying ceph.conf to DevStack node...")
+def distribute_zbkc_conf(devstack_node, zbkc_node):
+    log.info("Copying zbkc.conf to DevStack node...")
 
-    ceph_conf_path = '/etc/ceph/ceph.conf'
-    ceph_conf = misc.get_file(ceph_node, ceph_conf_path, sudo=True)
-    misc.sudo_write_file(devstack_node, ceph_conf_path, ceph_conf)
+    zbkc_conf_path = '/etc/zbkc/zbkc.conf'
+    zbkc_conf = misc.get_file(zbkc_node, zbkc_conf_path, sudo=True)
+    misc.sudo_write_file(devstack_node, zbkc_conf_path, zbkc_conf)
 
 
-def generate_ceph_keys(ceph_node):
-    log.info("Generating Ceph keys...")
+def generate_zbkc_keys(zbkc_node):
+    log.info("Generating Zbkc keys...")
 
-    ceph_auth_cmds = [
-        ['sudo', 'ceph', 'auth', 'get-or-create', 'client.cinder', 'mon',
+    zbkc_auth_cmds = [
+        ['sudo', 'zbkc', 'auth', 'get-or-create', 'client.cinder', 'mon',
             'allow r', 'osd', 'allow class-read object_prefix rbd_children, allow rwx pool=volumes, allow rx pool=images'],  # noqa
-        ['sudo', 'ceph', 'auth', 'get-or-create', 'client.glance', 'mon',
+        ['sudo', 'zbkc', 'auth', 'get-or-create', 'client.glance', 'mon',
             'allow r', 'osd', 'allow class-read object_prefix rbd_children, allow rwx pool=images'],  # noqa
-        ['sudo', 'ceph', 'auth', 'get-or-create', 'client.cinder-backup', 'mon',
+        ['sudo', 'zbkc', 'auth', 'get-or-create', 'client.cinder-backup', 'mon',
             'allow r', 'osd', 'allow class-read object_prefix rbd_children, allow rwx pool=backups'],  # noqa
     ]
-    for cmd in ceph_auth_cmds:
-        ceph_node.run(args=cmd)
+    for cmd in zbkc_auth_cmds:
+        zbkc_node.run(args=cmd)
 
 
-def distribute_ceph_keys(devstack_node, ceph_node):
-    log.info("Copying Ceph keys to DevStack node...")
+def distribute_zbkc_keys(devstack_node, zbkc_node):
+    log.info("Copying Zbkc keys to DevStack node...")
 
     def copy_key(from_remote, key_name, to_remote, dest_path, owner):
         key_stringio = StringIO()
         from_remote.run(
-            args=['sudo', 'ceph', 'auth', 'get-or-create', key_name],
+            args=['sudo', 'zbkc', 'auth', 'get-or-create', key_name],
             stdout=key_stringio)
         key_stringio.seek(0)
         misc.sudo_write_file(to_remote, dest_path,
                              key_stringio, owner=owner)
     keys = [
         dict(name='client.glance',
-             path='/etc/ceph/ceph.client.glance.keyring',
+             path='/etc/zbkc/zbkc.client.glance.keyring',
              # devstack appears to just want root:root
              #owner='glance:glance',
              ),
         dict(name='client.cinder',
-             path='/etc/ceph/ceph.client.cinder.keyring',
+             path='/etc/zbkc/zbkc.client.cinder.keyring',
              # devstack appears to just want root:root
              #owner='cinder:cinder',
              ),
         dict(name='client.cinder-backup',
-             path='/etc/ceph/ceph.client.cinder-backup.keyring',
+             path='/etc/zbkc/zbkc.client.cinder-backup.keyring',
              # devstack appears to just want root:root
              #owner='cinder:cinder',
              ),
     ]
     for key_dict in keys:
-        copy_key(ceph_node, key_dict['name'], devstack_node,
+        copy_key(zbkc_node, key_dict['name'], devstack_node,
                  key_dict['path'], key_dict.get('owner'))
 
 
-def set_libvirt_secret(devstack_node, ceph_node):
+def set_libvirt_secret(devstack_node, zbkc_node):
     log.info("Setting libvirt secret...")
 
     cinder_key_stringio = StringIO()
-    ceph_node.run(args=['sudo', 'ceph', 'auth', 'get-key', 'client.cinder'],
+    zbkc_node.run(args=['sudo', 'zbkc', 'auth', 'get-key', 'client.cinder'],
                   stdout=cinder_key_stringio)
     cinder_key = cinder_key_stringio.getvalue().strip()
 
@@ -185,7 +185,7 @@ def set_libvirt_secret(devstack_node, ceph_node):
     secret_template = textwrap.dedent("""
     <secret ephemeral='no' private='no'>
         <uuid>{uuid}</uuid>
-        <usage type='ceph'>
+        <usage type='zbkc'>
             <name>client.cinder secret</name>
         </usage>
     </secret>""")
@@ -199,7 +199,7 @@ def set_libvirt_secret(devstack_node, ceph_node):
 
 
 def update_devstack_config_files(devstack_node, secret_uuid):
-    log.info("Updating DevStack config files to use Ceph...")
+    log.info("Updating DevStack config files to use Zbkc...")
 
     def backup_config(node, file_name, backup_ext='.orig.teuth'):
         node.run(args=['cp', '-f', file_name, file_name + backup_ext])
@@ -224,25 +224,25 @@ def update_devstack_config_files(devstack_node, secret_uuid):
         dict(name='/etc/cinder/cinder.conf', options=dict(
             volume_driver='cinder.volume.drivers.rbd.RBDDriver',
             rbd_pool='volumes',
-            rbd_ceph_conf='/etc/ceph/ceph.conf',
+            rbd_zbkc_conf='/etc/zbkc/zbkc.conf',
             rbd_flatten_volume_from_snapshot='false',
             rbd_max_clone_depth='5',
             glance_api_version='2',
             rbd_user='cinder',
             rbd_secret_uuid=secret_uuid,
-            backup_driver='cinder.backup.drivers.ceph',
-            backup_ceph_conf='/etc/ceph/ceph.conf',
-            backup_ceph_user='cinder-backup',
-            backup_ceph_chunk_size='134217728',
-            backup_ceph_pool='backups',
-            backup_ceph_stripe_unit='0',
-            backup_ceph_stripe_count='0',
+            backup_driver='cinder.backup.drivers.zbkc',
+            backup_zbkc_conf='/etc/zbkc/zbkc.conf',
+            backup_zbkc_user='cinder-backup',
+            backup_zbkc_chunk_size='134217728',
+            backup_zbkc_pool='backups',
+            backup_zbkc_stripe_unit='0',
+            backup_zbkc_stripe_count='0',
             restore_discard_excess_bytes='true',
             )),
         dict(name='/etc/nova/nova.conf', options=dict(
             libvirt_images_type='rbd',
             libvirt_images_rbd_pool='volumes',
-            libvirt_images_rbd_ceph_conf='/etc/ceph/ceph.conf',
+            libvirt_images_rbd_zbkc_conf='/etc/zbkc/zbkc.conf',
             rbd_user='cinder',
             rbd_secret_uuid=secret_uuid,
             libvirt_inject_password='false',
@@ -342,7 +342,7 @@ def smoke(ctx, config):
         pass
 
 
-def create_volume(devstack_node, ceph_node, vol_name, size):
+def create_volume(devstack_node, zbkc_node, vol_name, size):
     """
     :param size: The size of the volume, in GB
     """
@@ -359,17 +359,17 @@ def create_volume(devstack_node, ceph_node, vol_name, size):
 
     out_stream = StringIO()
     try:
-        ceph_node.run(args="rbd --id cinder ls -l volumes", stdout=out_stream,
+        zbkc_node.run(args="rbd --id cinder ls -l volumes", stdout=out_stream,
                       wait=True)
     except run.CommandFailedError:
         log.debug("Original rbd call failed; retrying without '--id cinder'")
-        ceph_node.run(args="rbd ls -l volumes", stdout=out_stream,
+        zbkc_node.run(args="rbd ls -l volumes", stdout=out_stream,
                       wait=True)
 
     assert vol_info['id'] in out_stream.getvalue(), \
-        "Volume not found on Ceph cluster"
+        "Volume not found on Zbkc cluster"
     assert vol_info['size'] == size, \
-        "Volume size on Ceph cluster is different than specified"
+        "Volume size on Zbkc cluster is different than specified"
     return vol_info['id']
 
 

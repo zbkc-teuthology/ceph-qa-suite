@@ -33,7 +33,7 @@ def task(ctx, config):
     example:
 
     tasks:
-    - ceph:
+    - zbkc:
     - radosbench:
         clients: [client.0]
         time: 360
@@ -45,7 +45,7 @@ def task(ctx, config):
     radosbench = {}
 
     testdir = teuthology.get_testdir(ctx)
-    manager = ctx.managers['ceph']
+    manager = ctx.managers['zbkc']
 
     create_pool = config.get('create_pool', True)
     for role in config.get('clients', ['client.0']):
@@ -77,7 +77,7 @@ def task(ctx, config):
             args=[
                 "/bin/sh", "-c",
                 " ".join(['adjust-ulimits',
-                          'ceph-coverage',
+                          'zbkc-coverage',
                           '{tdir}/archive/coverage',
                           'rados',
 			  '--no-log-to-stderr',

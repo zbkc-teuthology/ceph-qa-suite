@@ -1,4 +1,4 @@
 tasks:
-  - cephfs_test_runner:
+  - zbkcfs_test_runner:
       modules:
-        - tasks.cephfs.test_readahead
+        - tasks.zbkcfs.test_readahead

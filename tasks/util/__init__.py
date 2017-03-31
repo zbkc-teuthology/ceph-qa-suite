@@ -7,7 +7,7 @@ def get_remote(ctx, cluster, service_type, service_id):
     :param cluster: name of the cluster the service is part of
     :param service_type: e.g. 'mds', 'osd', 'client'
     :param service_id: The third part of a role, e.g. '0' for
-                       the role 'ceph.client.0'
+                       the role 'zbkc.client.0'
     :return: a Remote instance for the host where the
              requested role is placed
     """

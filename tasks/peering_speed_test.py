@@ -23,7 +23,7 @@ def setup(ctx, config):
     """
     Setup peering test on remotes.
     """
-    manager = ctx.managers['ceph']
+    manager = ctx.managers['zbkc']
     manager.clear_pools()
     manager.create_pool(POOLNAME, config.num_pgs)
     log.info("populating pool")
@@ -41,7 +41,7 @@ def do_run(ctx, config):
     """
     start = time.time()
     # mark in osd
-    manager = ctx.managers['ceph']
+    manager = ctx.managers['zbkc']
     manager.mark_in_osd(0)
     log.info("writing out objects")
     manager.rados_write_objects(
@@ -73,7 +73,7 @@ def task(ctx, config):
     Peering speed test
     """
     setup(ctx, config)
-    manager = ctx.managers['ceph']
+    manager = ctx.managers['zbkc']
     manager.mark_out_osd(0)
     manager.wait_for_clean()
     ret = []

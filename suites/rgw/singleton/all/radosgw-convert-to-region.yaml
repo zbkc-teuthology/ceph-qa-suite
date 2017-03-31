@@ -20,7 +20,7 @@ roles:
 
 tasks:
 - install:
-- ceph:
+- zbkc:
     conf:
         client:
           rgw region: default

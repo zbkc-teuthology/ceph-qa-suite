@@ -1,0 +1,6 @@
+overrides:
+  zbkc:
+    crush_tunables: bobtail
+tasks:
+- install:
+- zbkc:

@@ -6,7 +6,7 @@ tasks:
         - fs/quota
 
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         client quota: true

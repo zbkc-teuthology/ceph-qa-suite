@@ -15,7 +15,7 @@
 # GNU Library Public License for more details.
 #
 function install_deps() {
-    git archive --remote=git://git.ceph.com/ceph.git master install-deps.sh | tar -xvf -
+    git archive --remote=git://git.zbkc.com/zbkc.git master install-deps.sh | tar -xvf -
     #
     # drop the following hack when trusty is not supported anymore
     # there is no other way as long as we maintain a debian directory that tries
@@ -28,30 +28,30 @@ function install_deps() {
 }
 
 function git_submodules() {
-    # see http://tracker.ceph.com/issues/13426
-    perl -pi -e 's|git://ceph.com/git/ceph-object-corpus.git|https://github.com/ceph/ceph-object-corpus.git|' .gitmodules
+    # see http://tracker.zbkc.com/issues/13426
+    perl -pi -e 's|git://zbkc.com/git/zbkc-object-corpus.git|https://github.com/zbkc/zbkc-object-corpus.git|' .gitmodules
     local force=$(if git submodule usage 2>&1 | grep --quiet 'update.*--force'; then echo --force ; fi)
     git submodule sync || return 1
     git submodule update $force --init --recursive || return 1
 }
 
-function get_ceph() {
-    local git_ceph_url=$1
+function get_zbkc() {
+    local git_zbkc_url=$1
     local sha1=$2
 
-    test -d ceph || git clone ${git_ceph_url} ceph
-    cd ceph
+    test -d zbkc || git clone ${git_zbkc_url} zbkc
+    cd zbkc
     if test -d src ; then # so we don't try to fetch when using a fixture
-       git fetch --tags http://github.com/ceph/ceph
+       git fetch --tags http://github.com/zbkc/zbkc
     fi
-    git fetch --tags ${git_ceph_url}
+    git fetch --tags ${git_zbkc_url}
     git checkout ${sha1}
 }
 
-function init_ceph() {
-    local git_ceph_url=$1
+function init_zbkc() {
+    local git_zbkc_url=$1
     local sha1=$2
-    get_ceph $git_ceph_url $sha1 || return 1
+    get_zbkc $git_zbkc_url $sha1 || return 1
     git_submodules || return 1
     install_deps || return 1
 }
@@ -67,7 +67,7 @@ function flavor2configure() {
 }
 
 #
-# for a given $sha1 in the $ceph_dir repository, lookup all references
+# for a given $sha1 in the $zbkc_dir repository, lookup all references
 # from the remote origin and tags matching the sha1. Add a symbolic
 # link in $ref_dir to the $sha1 for each reference found. If the
 # reference is a tag, also add a symbolic link to the commit to which
@@ -75,12 +75,12 @@ function flavor2configure() {
 #
 function link_same() {
     local ref_dir=$1
-    local ceph_dir=$2
+    local zbkc_dir=$2
     local sha1=$3
 
     mkdir -p $ref_dir
     (
-        cd ${ceph_dir}
+        cd ${zbkc_dir}
         git for-each-ref refs/tags/** refs/remotes/origin/** | grep $sha1 | \
             while read sha1 type ref ; do
                 if test $type = 'tag' ; then

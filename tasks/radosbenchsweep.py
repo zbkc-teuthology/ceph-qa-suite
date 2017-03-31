@@ -176,7 +176,7 @@ def run_radosbench(ctx, config, f, num_osds, size, replica, rep):
         proc = remote.run(
             args=[
                 'adjust-ulimits',
-                'ceph-coverage',
+                'zbkc-coverage',
                 '{}/archive/coverage'.format(teuthology.get_testdir(ctx)),
                 'rados',
                 '--no-log-to-stderr',

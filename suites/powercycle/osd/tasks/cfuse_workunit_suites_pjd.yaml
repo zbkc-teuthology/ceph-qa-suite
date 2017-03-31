@@ -1,11 +1,11 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         fuse default permissions: false
         fuse set user groups: true
 tasks:
-- ceph-fuse:
+- zbkc-fuse:
 - workunit:
     clients:
       all:

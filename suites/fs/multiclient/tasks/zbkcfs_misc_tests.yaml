@@ -1,0 +1,4 @@
+tasks:
+- zbkcfs_test_runner:
+    modules:
+      - tasks.zbkcfs.test_misc

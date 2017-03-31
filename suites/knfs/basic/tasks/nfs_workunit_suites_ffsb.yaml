@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     conf:
       osd:
         filestore flush min: 0

@@ -1,11 +1,11 @@
 
 overrides:
-  ceph:
+  zbkc:
     conf:
       global:
         ms type: simple
 
 tasks:
-  - cephfs_test_runner:
+  - zbkcfs_test_runner:
       modules:
-        - tasks.cephfs.test_volume_client
+        - tasks.zbkcfs.test_volume_client

@@ -10,19 +10,19 @@ openstack:
       size: 10 # GB
 tasks:
 - install:
-- ceph:
+- zbkc:
     log-whitelist:
     - wrongly marked me down
     - slow request
 - exec:
     client.0:
-      - sudo ceph osd pool create foo 128 128
+      - sudo zbkc osd pool create foo 128 128
       - sleep 5
-      - sudo ceph tell osd.0 injectargs -- --osd-inject-failure-on-pg-removal
-      - sudo ceph osd pool delete foo foo --yes-i-really-really-mean-it
-- ceph.wait_for_failure: [osd.0]
+      - sudo zbkc tell osd.0 injectargs -- --osd-inject-failure-on-pg-removal
+      - sudo zbkc osd pool delete foo foo --yes-i-really-really-mean-it
+- zbkc.wait_for_failure: [osd.0]
 - exec:
     client.0:
-      - sudo ceph osd down 0
-- ceph.restart: [osd.0]
-- ceph.healthy:
+      - sudo zbkc osd down 0
+- zbkc.restart: [osd.0]
+- zbkc.healthy:

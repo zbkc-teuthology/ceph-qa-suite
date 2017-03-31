@@ -1,5 +1,5 @@
 overrides:
-  ceph:
+  zbkc:
     log-whitelist:
     - wrongly marked me down
     - objects unfound and apparently lost

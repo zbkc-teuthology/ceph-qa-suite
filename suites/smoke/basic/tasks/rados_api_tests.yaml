@@ -1,6 +1,6 @@
 tasks:
 - install: null
-- ceph:
+- zbkc:
     fs: ext4
     log-whitelist:
     - reached quota

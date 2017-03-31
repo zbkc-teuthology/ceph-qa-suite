@@ -1,7 +1,7 @@
 tasks:
 - cifs-mount:
     client.1:
-      share: ceph
+      share: zbkc
 - workunit:
     clients:
       client.1:

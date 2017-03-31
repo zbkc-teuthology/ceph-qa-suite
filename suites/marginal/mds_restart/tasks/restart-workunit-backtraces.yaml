@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
     conf:
       mds:
         mds log segment size: 16384

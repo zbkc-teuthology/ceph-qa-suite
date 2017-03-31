@@ -1,6 +1,6 @@
 
 overrides:
-  ceph:
+  zbkc:
     conf:
       global:
         ms type: simple
@@ -8,6 +8,6 @@ overrides:
       - client session with invalid root
 
 tasks:
-  - cephfs_test_runner:
+  - zbkcfs_test_runner:
       modules:
-        - tasks.cephfs.test_sessionmap
+        - tasks.zbkcfs.test_sessionmap

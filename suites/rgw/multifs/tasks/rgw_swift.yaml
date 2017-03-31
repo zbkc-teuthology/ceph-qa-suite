@@ -1,6 +1,6 @@
 tasks:
 - install:
-- ceph:
+- zbkc:
 - rgw: [client.0]
 - swift:
     client.0:

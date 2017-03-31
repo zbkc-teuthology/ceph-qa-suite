@@ -1,0 +1,5 @@
+overrides:
+  zbkc:
+    conf:
+      client:
+        fuse default permissions: false

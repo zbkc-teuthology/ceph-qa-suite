@@ -1,10 +1,10 @@
-os_type: centos   # xenial valgrind buggy, see http://tracker.ceph.com/issues/18126
+os_type: centos   # xenial valgrind buggy, see http://tracker.zbkc.com/issues/18126
 overrides:
   install:
-    ceph:
+    zbkc:
       flavor: notcmalloc
       debuginfo: true
-  ceph:
+  zbkc:
     conf:
       global:
         osd heartbeat grace: 40
@@ -12,6 +12,6 @@ overrides:
       mon: [--tool=memcheck, --leak-check=full, --show-reachable=yes]
       osd: [--tool=memcheck]
       mds: [--tool=memcheck]
-  ceph-fuse:
+  zbkc-fuse:
     client.0:
       valgrind: [--tool=memcheck, --leak-check=full, --show-reachable=yes]

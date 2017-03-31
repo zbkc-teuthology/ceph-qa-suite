@@ -17,7 +17,7 @@
 
 # 
 # Create and upload a RPM repository with the same naming conventions
-# as https://github.com/ceph/autobuild-ceph/blob/master/build-ceph-rpm.sh
+# as https://github.com/zbkc/autobuild-zbkc/blob/master/build-zbkc-rpm.sh
 #
 
 set -xe
@@ -25,7 +25,7 @@ set -xe
 base=/tmp/release
 gitbuilder_host=$1
 codename=$2
-git_ceph_url=$3
+git_zbkc_url=$3
 sha1=$4
 flavor=$5
 arch=$6
@@ -41,7 +41,7 @@ fi
 
 source $(dirname $0)/common.sh
 
-init_ceph $git_ceph_url $sha1
+init_zbkc $git_zbkc_url $sha1
 
 distro=$( source /etc/os-release ; echo $ID )
 distro_version=$( source /etc/os-release ; echo $VERSION )
@@ -54,13 +54,13 @@ releasedir=$base/$distro/WORKDIR
 # d) contains the short hash of the commit
 #
 vers=$(git describe --match "v*" | sed s/^v//)
-ceph_dir=$(pwd)
+zbkc_dir=$(pwd)
 
 #
 # Create a repository in a directory with a name structured
 # as
 #
-base=ceph-rpm-$codename-$arch-$flavor
+base=zbkc-rpm-$codename-$arch-$flavor
 
 function setup_rpmmacros() {
     if ! grep -q find_debuginfo_dwz_opts $HOME/.rpmmacros ; then
@@ -115,11 +115,11 @@ function build_package() {
     mkdir -p ${buildarea}/SOURCES
     mkdir -p ${buildarea}/SRPMS
     mkdir -p ${buildarea}/SPECS
-    cp ceph.spec ${buildarea}/SPECS
+    cp zbkc.spec ${buildarea}/SPECS
     mkdir -p ${buildarea}/RPMS
     mkdir -p ${buildarea}/BUILD
-    CEPH_TARBALL=( ceph-*.tar.bz2 )
-    cp -a $CEPH_TARBALL ${buildarea}/SOURCES/.
+    ZBKC_TARBALL=( zbkc-*.tar.bz2 )
+    cp -a $ZBKC_TARBALL ${buildarea}/SOURCES/.
     cp -a rpm/*.patch ${buildarea}/SOURCES || true
     (
         cd ${buildarea}/SPECS
@@ -129,12 +129,12 @@ function build_package() {
           sed -i -e '0,/%package/s//%debug_package\n&/' \
                  -e 's/%{epoch}://g' \
                  -e '/^Epoch:/d' \
-                 -e 's/%bcond_with ceph_test_package/%bcond_without ceph_test_package/' \
-                 -e "s/^Source0:.*$/Source0: $CEPH_TARBALL/" \
-                 ceph.spec
+                 -e 's/%bcond_with zbkc_test_package/%bcond_without zbkc_test_package/' \
+                 -e "s/^Source0:.*$/Source0: $ZBKC_TARBALL/" \
+                 zbkc.spec
         fi
         buildarea=`readlink -fn ${releasedir}`   ### rpm wants absolute path
-        PATH=$ccache:$PATH rpmbuild -ba --define "_unpackaged_files_terminate_build 0" --define "_topdir ${buildarea}" ceph.spec
+        PATH=$ccache:$PATH rpmbuild -ba --define "_unpackaged_files_terminate_build 0" --define "_topdir ${buildarea}" zbkc.spec
     )
 }
 
@@ -144,22 +144,22 @@ function build_rpm_release() {
     local gitbuilder_host=$3
     local base=$4
 
-    cat <<EOF > ${buildarea}/SPECS/ceph-release.spec
-Name:           ceph-release
+    cat <<EOF > ${buildarea}/SPECS/zbkc-release.spec
+Name:           zbkc-release
 Version:        1
 Release:        0%{?dist}
-Summary:        Ceph repository configuration
+Summary:        Zbkc repository configuration
 Group:          System Environment/Base
 License:        GPLv2
-URL:            http://gitbuilder.ceph.com/$dist
-Source0:        ceph.repo
-#Source0:        RPM-GPG-KEY-CEPH
-#Source1:        ceph.repo
+URL:            http://gitbuilder.zbkc.com/$dist
+Source0:        zbkc.repo
+#Source0:        RPM-GPG-KEY-ZBKC
+#Source1:        zbkc.repo
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:	noarch
 
 %description
-This package contains the Ceph repository GPG key as well as configuration
+This package contains the Zbkc repository GPG key as well as configuration
 for yum and up2date.
 
 %prep
@@ -173,7 +173,7 @@ install -pm 644 %{SOURCE0} .
 %install
 rm -rf %{buildroot}
 #install -Dpm 644 %{SOURCE0} \
-#    %{buildroot}/%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-CEPH
+#    %{buildroot}/%{_sysconfdir}/pki/rpm-gpg/RPM-GPG-KEY-ZBKC
 %if 0%{defined suse_version}
 install -dm 755 %{buildroot}/%{_sysconfdir}/zypp
 install -dm 755 %{buildroot}/%{_sysconfdir}/zypp/repos.d
@@ -205,36 +205,36 @@ install -pm 644 %{SOURCE0} \
 %changelog
 * Tue Mar 10 2013 Gary Lowell <glowell@inktank.com> - 1-0
 - Handle both yum and zypper
-- Use URL to ceph git repo for key
+- Use URL to zbkc git repo for key
 - remove config attribute from repo file
 * Tue Aug 27 2012 Gary Lowell <glowell@inktank.com> - 1-0
 - Initial Package
 EOF
 
-    cat <<EOF > $buildarea/SOURCES/ceph.repo
-[Ceph]
-name=Ceph packages for \$basearch
+    cat <<EOF > $buildarea/SOURCES/zbkc.repo
+[Zbkc]
+name=Zbkc packages for \$basearch
 baseurl=http://${gitbuilder_host}/${base}/sha1/${sha1}/\$basearch
 enabled=1
 gpgcheck=0
 type=rpm-md
 
-[Ceph-noarch]
-name=Ceph noarch packages
+[Zbkc-noarch]
+name=Zbkc noarch packages
 baseurl=http://${gitbuilder_host}/${base}/sha1/${sha1}/noarch
 enabled=1
 gpgcheck=0
 type=rpm-md
 
-[ceph-source]
-name=Ceph source packages
+[zbkc-source]
+name=Zbkc source packages
 baseurl=http://${gitbuilder_host}/${base}/sha1/${sha1}/SRPMS
 enabled=1
 gpgcheck=0
 type=rpm-md
 EOF
 
-    rpmbuild -bb --define "_topdir ${buildarea}" ${buildarea}/SPECS/ceph-release.spec
+    rpmbuild -bb --define "_topdir ${buildarea}" ${buildarea}/SPECS/zbkc-release.spec
 }
 
 function build_rpm_repo() {
@@ -257,14 +257,14 @@ function build_rpm_repo() {
     mkdir -p $sha1_dir
     echo $vers > $sha1_dir/version
     echo $sha1 > $sha1_dir/sha1
-    echo ceph > $sha1_dir/name
+    echo zbkc > $sha1_dir/name
 
     for dir in ${buildarea}/SRPMS ${buildarea}/RPMS/*
     do
         cp -fla ${dir} $sha1_dir
     done
 
-    link_same ${buildarea}/../$codename/$base/ref $ceph_dir $sha1
+    link_same ${buildarea}/../$codename/$base/ref $zbkc_dir $sha1
     if test "$gitbuilder_host" ; then
         (
             cd ${buildarea}/../$codename

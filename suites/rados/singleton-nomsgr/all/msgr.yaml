@@ -4,8 +4,8 @@ tasks:
 - install:
 - exec:
     client.0:
-          - ceph_test_async_driver
-          - ceph_test_msgr
+          - zbkc_test_async_driver
+          - zbkc_test_msgr
 openstack:
   - machine:
       disk: 40 # GB
@@ -15,7 +15,7 @@ openstack:
       count: 0
       size: 1 # GB
 overrides:
-  ceph:
+  zbkc:
     conf:
       client:
         debug ms: 20
